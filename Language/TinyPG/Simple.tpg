@@ -1,0 +1,96 @@
+// Simple.
+// Автор: Ильченко Егор.
+
+// Терминалы.
+GLOBAL -> @"global";
+END  	-> @"end";
+RETURN	-> @"return";
+ARROW  -> @"=>";
+
+IF	-> @"if";
+ELSE	-> @"else";
+FOR	-> @"for";
+TO 	-> @"to";
+INCBY	-> @"incby";
+WHILE	-> @"while";
+DO	-> @"do";
+
+OR	-> @"or";
+AND	-> @"and";
+NOT	-> @"not"; 
+
+PLUS	-> @"\+";
+MINUS	-> @"-";
+MULT	-> @"\*";
+DIV	-> @"/";
+COMP	-> @"=|\!=|\<\=|\<|\>=|\>";
+MOD	-> @"\%";
+INTDIV	-> @"//";
+POW	-> @"\^";
+
+INC 	-> @"\+\+";
+DEC 	-> @"--";
+
+COLON	-> @":";
+QUESTION -> @"\?";
+COMMA	-> @",";
+ASSIGN	-> @"\=";
+
+BROPEN		-> @"\(";
+BRCLOSE	-> @"\)";
+SQOPEN		-> @"\[";
+SQCLOSE	-> @"\]";
+
+STRING		-> @"@?\""(\""\""|[^\""])*\"""; // Магия.
+INTEGER	-> @"[0-9]+";
+DOUBLE		-> @"[0-9]*\.[0-9]+";
+BOOL		-> @"true|false";
+
+IDENTIFIER	-> @"[a-zA-Z_][a-zA-Z0-9_]*(?<!(^)(end|else|do|while|for|true|false|return|to|incby|global|or|and|not))(?!\w)"; // Черная магия.
+
+NEWLINE	-> @"\s+";
+EOF		-> @"^$";
+
+[Skip]
+WHITESPACE 	-> @"\s+";
+[Skip]
+COMMENT	-> @"//[^\n]*\n?";
+ 
+ 
+// Базовые конструкции.
+Start		-> Program? EOF;
+Program	-> Member (NEWLINE Member?)*;
+Member		-> Globalvar | Function;
+Globalvar	-> GLOBAL IDENTIFIER (ASSIGN Literal)?;
+Function	-> IDENTIFIER (BROPEN Parameters BRCLOSE)? ((ARROW Expr) | Statements);
+Parameters	-> Expr (COMMA Expr)*;
+Statements	-> (Statement (NEWLINE Statement?)*)? END;
+ 
+// Операторы.
+Statement	-> IfStm | WhileStm | DoStm | ForStm | ReturnStm | CallOrAssign;
+IfStm 		-> IF Expr Statements (ELSE Statements)?;
+WhileStm 	-> WHILE Expr? Statements;
+DoStm 		-> DO Statements WHILE Expr;
+ForStm 	-> FOR Variable Assign TO Expr (INCBY Expr)? Statements;
+ReturnStm	-> RETURN Expr?;
+
+// Вызовы или присваивания.
+CallOrAssign  -> Variable Assign?;
+Assign		-> ASSIGN Expr;
+Variable 	-> IDENTIFIER (Array | Call)?;
+Array		-> SQOPEN Expr SQCLOSE;
+Call		-> BROPEN Arguments? BRCLOSE;
+Arguments	-> Expr (COMMA Expr)*;
+Literal	-> INTEGER | DOUBLE | STRING | BOOL;
+ 
+// Выражения.
+Expr		-> OrExpr (QUESTION Expr COLON Expr)?;
+OrExpr 	-> AndExpr (OR AndExpr)*;
+AndExpr	-> NotExpr (AND NotExpr)*;
+NotExpr 	-> NOT? CompExpr;
+CompExpr 	-> AddExpr (COMP AddExpr)?;
+AddExpr 	-> MultExpr ((PLUS | MINUS) MultExpr)*;
+MultExpr 	-> PowExpr ((MULT | DIV | MOD | INTDIV) PowExpr)*;
+PowExpr  	-> UnaryExpr (POW UnaryExpr)*;
+UnaryExpr 	-> (MINUS | PLUS | INC | DEC)? Atom;
+Atom		-> Literal | Variable | BROPEN Expr BRCLOSE;
