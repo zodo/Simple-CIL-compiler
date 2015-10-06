@@ -2,22 +2,23 @@
 // Автор: Ильченко Егор.
 
 // Терминалы.
-GLOBAL -> @"global";
-END  	-> @"end";
-RETURN	-> @"return";
+[IgnoreCase]GLOBAL -> @"global";
+[IgnoreCase]END  	-> @"end";
+[IgnoreCase]RETURN	-> @"return";
 ARROW  -> @"=>";
 
-IF	-> @"if";
-ELSE	-> @"else";
-FOR	-> @"for";
-TO 	-> @"to";
-INCBY	-> @"incby";
-WHILE	-> @"while";
-DO	-> @"do";
+[IgnoreCase]IF	-> @"if";
+[IgnoreCase]ELSE	-> @"else";
+[IgnoreCase]FOR	-> @"for";
+[IgnoreCase]TO 	-> @"to";
+[IgnoreCase]INCBY	-> @"incby";
+[IgnoreCase]WHILE	-> @"while";
+[IgnoreCase]DO	-> @"do";
 
-OR	-> @"or";
-AND	-> @"and";
-NOT	-> @"not"; 
+[IgnoreCase]OR	-> @"or";
+[IgnoreCase]AND	-> @"and";
+[IgnoreCase]NOT	-> @"not"; 
+[IgnoreCase]OPER	-> @"in|out";
 
 PLUS	-> @"\+";
 MINUS	-> @"-";
@@ -44,9 +45,9 @@ SQCLOSE	-> @"\]";
 STRING		-> @"@?\""(\""\""|[^\""])*\"""; // Магия.
 INTEGER	-> @"[0-9]+";
 DOUBLE		-> @"[0-9]*\.[0-9]+";
-BOOL		-> @"true|false";
+[IgnoreCase]BOOL-> @"true|false";
 
-IDENTIFIER	-> @"[a-zA-Z_][a-zA-Z0-9_]*(?<!(^)(end|else|do|while|for|true|false|return|to|incby|global|or|and|not))(?!\w)"; // Черная магия.
+[IgnoreCase]IDENTIFIER-> @"[a-zA-Z_][a-zA-Z0-9_]*(?<!(^)(end|else|do|while|for|true|false|return|to|incby|global|or|and|not))(?!\w)"; // Черная магия.
 
 NEWLINE	-> @"\s+";
 EOF		-> @"^$";
@@ -63,16 +64,17 @@ Program	-> Member (NEWLINE Member?)*;
 Member		-> Globalvar | Function;
 Globalvar	-> GLOBAL IDENTIFIER (ASSIGN Literal)?;
 Function	-> IDENTIFIER (BROPEN Parameters BRCLOSE)? ((ARROW Expr) | Statements);
-Parameters	-> Expr (COMMA Expr)*;
+Parameters	-> IDENTIFIER (COMMA IDENTIFIER)*;
 Statements	-> (Statement (NEWLINE Statement?)*)? END;
  
 // Операторы.
-Statement	-> IfStm | WhileStm | DoStm | ForStm | ReturnStm | CallOrAssign;
+Statement	-> IfStm | WhileStm | DoStm | ForStm | ReturnStm | CallOrAssign | OperStm;
 IfStm 		-> IF Expr Statements (ELSE Statements)?;
 WhileStm 	-> WHILE Expr? Statements;
 DoStm 		-> DO Statements WHILE Expr;
 ForStm 	-> FOR Variable Assign TO Expr (INCBY Expr)? Statements;
 ReturnStm	-> RETURN Expr?;
+OperStm	-> OPER Call?;
 
 // Вызовы или присваивания.
 CallOrAssign  -> Variable Assign?;

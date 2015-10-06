@@ -11,11 +11,13 @@ namespace TinyPG
     [Serializable]
     public class ParseErrors : List<ParseError>
     {
+
     }
 
     [Serializable]
     public class ParseError
     {
+        private string file;
         private string message;
         private int code;
         private int line;
@@ -23,6 +25,7 @@ namespace TinyPG
         private int pos;
         private int length;
 
+        public string File { get { return file; } }
         public int Code { get { return code; } }
         public int Line { get { return line; } }
         public int Column { get { return col; } }
@@ -35,18 +38,33 @@ namespace TinyPG
         {
         }
 
-        public ParseError(string message, int code, ParseNode node) : this(message, code,  0, node.Token.StartPos, node.Token.StartPos, node.Token.Length)
+        public ParseError(string message, int code, ParseNode node) : this(message, code, node.Token)
         {
         }
 
-        public ParseError(string message, int code, int line, int col, int pos, int length)
+        public ParseError(string message, int code, Token token) : this(message, code, token.File, token.Line, token.Column, token.StartPos, token.Length)
         {
+        }
+
+        public ParseError(string message, int code) : this(message, code, string.Empty, 0, 0, 0, 0)
+        {
+        }
+
+        public ParseError(string message, int code, string file, int line, int col, int pos, int length)
+        {
+            this.file = file;
             this.message = message;
             this.code = code;
             this.line = line;
             this.col = col;
             this.pos = pos;
             this.length = length;
+        }
+
+        public override string ToString()
+        {
+            // ReSharper disable once UseStringInterpolation
+            return string.Format("({1}:{2}) {0}", Message, Line, Column);
         }
     }
 
@@ -206,6 +224,9 @@ namespace TinyPG
                 case TokenType.ReturnStm:
                     Value = EvalReturnStm(tree, paramlist);
                     break;
+                case TokenType.OperStm:
+                    Value = EvalOperStm(tree, paramlist);
+                    break;
                 case TokenType.CallOrAssign:
                     Value = EvalCallOrAssign(tree, paramlist);
                     break;
@@ -272,147 +293,212 @@ namespace TinyPG
 
         protected virtual object EvalProgram(ParseTree tree, params object[] paramlist)
         {
-            throw new NotImplementedException();
+            foreach (var node in Nodes)
+                node.Eval(tree, paramlist);
+            return null;
         }
 
         protected virtual object EvalMember(ParseTree tree, params object[] paramlist)
         {
-            throw new NotImplementedException();
+            foreach (var node in Nodes)
+                node.Eval(tree, paramlist);
+            return null;
         }
 
         protected virtual object EvalGlobalvar(ParseTree tree, params object[] paramlist)
         {
-            throw new NotImplementedException();
+            foreach (var node in Nodes)
+                node.Eval(tree, paramlist);
+            return null;
         }
 
         protected virtual object EvalFunction(ParseTree tree, params object[] paramlist)
         {
-            throw new NotImplementedException();
+            foreach (var node in Nodes)
+                node.Eval(tree, paramlist);
+            return null;
         }
 
         protected virtual object EvalParameters(ParseTree tree, params object[] paramlist)
         {
-            throw new NotImplementedException();
+            foreach (var node in Nodes)
+                node.Eval(tree, paramlist);
+            return null;
         }
 
         protected virtual object EvalStatements(ParseTree tree, params object[] paramlist)
         {
-            throw new NotImplementedException();
+            foreach (var node in Nodes)
+                node.Eval(tree, paramlist);
+            return null;
         }
 
         protected virtual object EvalStatement(ParseTree tree, params object[] paramlist)
         {
-            throw new NotImplementedException();
+            foreach (var node in Nodes)
+                node.Eval(tree, paramlist);
+            return null;
         }
 
         protected virtual object EvalIfStm(ParseTree tree, params object[] paramlist)
         {
-            throw new NotImplementedException();
+            foreach (var node in Nodes)
+                node.Eval(tree, paramlist);
+            return null;
         }
 
         protected virtual object EvalWhileStm(ParseTree tree, params object[] paramlist)
         {
-            throw new NotImplementedException();
+            foreach (var node in Nodes)
+                node.Eval(tree, paramlist);
+            return null;
         }
 
         protected virtual object EvalDoStm(ParseTree tree, params object[] paramlist)
         {
-            throw new NotImplementedException();
+            foreach (var node in Nodes)
+                node.Eval(tree, paramlist);
+            return null;
         }
 
         protected virtual object EvalForStm(ParseTree tree, params object[] paramlist)
         {
-            throw new NotImplementedException();
+            foreach (var node in Nodes)
+                node.Eval(tree, paramlist);
+            return null;
         }
 
         protected virtual object EvalReturnStm(ParseTree tree, params object[] paramlist)
         {
-            throw new NotImplementedException();
+            foreach (var node in Nodes)
+                node.Eval(tree, paramlist);
+            return null;
+        }
+
+        protected virtual object EvalOperStm(ParseTree tree, params object[] paramlist)
+        {
+            foreach (var node in Nodes)
+                node.Eval(tree, paramlist);
+            return null;
         }
 
         protected virtual object EvalCallOrAssign(ParseTree tree, params object[] paramlist)
         {
-            throw new NotImplementedException();
+            foreach (var node in Nodes)
+                node.Eval(tree, paramlist);
+            return null;
         }
 
         protected virtual object EvalAssign(ParseTree tree, params object[] paramlist)
         {
-            throw new NotImplementedException();
+            foreach (var node in Nodes)
+                node.Eval(tree, paramlist);
+            return null;
         }
 
         protected virtual object EvalVariable(ParseTree tree, params object[] paramlist)
         {
-            throw new NotImplementedException();
+            foreach (var node in Nodes)
+                node.Eval(tree, paramlist);
+            return null;
         }
 
         protected virtual object EvalArray(ParseTree tree, params object[] paramlist)
         {
-            throw new NotImplementedException();
+            foreach (var node in Nodes)
+                node.Eval(tree, paramlist);
+            return null;
         }
 
         protected virtual object EvalCall(ParseTree tree, params object[] paramlist)
         {
-            throw new NotImplementedException();
+            foreach (var node in Nodes)
+                node.Eval(tree, paramlist);
+            return null;
         }
 
         protected virtual object EvalArguments(ParseTree tree, params object[] paramlist)
         {
-            throw new NotImplementedException();
+            foreach (var node in Nodes)
+                node.Eval(tree, paramlist);
+            return null;
         }
 
         protected virtual object EvalLiteral(ParseTree tree, params object[] paramlist)
         {
-            throw new NotImplementedException();
+            foreach (var node in Nodes)
+                node.Eval(tree, paramlist);
+            return null;
         }
 
         protected virtual object EvalExpr(ParseTree tree, params object[] paramlist)
         {
-            throw new NotImplementedException();
+            foreach (var node in Nodes)
+                node.Eval(tree, paramlist);
+            return null;
         }
 
         protected virtual object EvalOrExpr(ParseTree tree, params object[] paramlist)
         {
-            throw new NotImplementedException();
+            foreach (var node in Nodes)
+                node.Eval(tree, paramlist);
+            return null;
         }
 
         protected virtual object EvalAndExpr(ParseTree tree, params object[] paramlist)
         {
-            throw new NotImplementedException();
+            foreach (var node in Nodes)
+                node.Eval(tree, paramlist);
+            return null;
         }
 
         protected virtual object EvalNotExpr(ParseTree tree, params object[] paramlist)
         {
-            throw new NotImplementedException();
+            foreach (var node in Nodes)
+                node.Eval(tree, paramlist);
+            return null;
         }
 
         protected virtual object EvalCompExpr(ParseTree tree, params object[] paramlist)
         {
-            throw new NotImplementedException();
+            foreach (var node in Nodes)
+                node.Eval(tree, paramlist);
+            return null;
         }
 
         protected virtual object EvalAddExpr(ParseTree tree, params object[] paramlist)
         {
-            throw new NotImplementedException();
+            foreach (var node in Nodes)
+                node.Eval(tree, paramlist);
+            return null;
         }
 
         protected virtual object EvalMultExpr(ParseTree tree, params object[] paramlist)
         {
-            throw new NotImplementedException();
+            foreach (var node in Nodes)
+                node.Eval(tree, paramlist);
+            return null;
         }
 
         protected virtual object EvalPowExpr(ParseTree tree, params object[] paramlist)
         {
-            throw new NotImplementedException();
+            foreach (var node in Nodes)
+                node.Eval(tree, paramlist);
+            return null;
         }
 
         protected virtual object EvalUnaryExpr(ParseTree tree, params object[] paramlist)
         {
-            throw new NotImplementedException();
+            foreach (var node in Nodes)
+                node.Eval(tree, paramlist);
+            return null;
         }
 
         protected virtual object EvalAtom(ParseTree tree, params object[] paramlist)
         {
-            throw new NotImplementedException();
+            foreach (var node in Nodes)
+                node.Eval(tree, paramlist);
+            return null;
         }
 
 

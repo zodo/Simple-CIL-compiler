@@ -20,16 +20,7 @@ namespace TinyPG
         public int CurrentColumn;
         public int CurrentPosition;
         public List<Token> Skipped = new List<Token>(); // tokens that were skipped
-        public List<Token> RecognizedTokens 
-        {
-            get
-            {
-                return _recognizedTokens;
-            }
-        }
         
-        private List<Token> _recognizedTokens = new List<Token>();
-
         private Token LookAheadToken = null;
         private readonly TokenType FileAndLine = default(TokenType);
 
@@ -42,126 +33,25 @@ namespace TinyPG
             Regex regex;
             Patterns = new Dictionary<TokenType, Regex>();
             Tokens = new List<TokenType>();
-
+            
             SkipList = new List<TokenType>();
             SkipList.Add(TokenType.WHITESPACE);
-            SkipList.Add(TokenType.COMMENT);
 
-            regex = new Regex(@"global", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            Patterns.Add(TokenType.GLOBAL, regex);
-            Tokens.Add(TokenType.GLOBAL);
+            regex = new Regex(@"^\s*$", RegexOptions.Compiled);
+            Patterns.Add(TokenType.EOF, regex);
+            Tokens.Add(TokenType.EOF);
 
-            regex = new Regex(@"end", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            Patterns.Add(TokenType.END, regex);
-            Tokens.Add(TokenType.END);
+            regex = new Regex(@"[0-9]+", RegexOptions.Compiled);
+            Patterns.Add(TokenType.NUMBER, regex);
+            Tokens.Add(TokenType.NUMBER);
 
-            regex = new Regex(@"return", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            Patterns.Add(TokenType.RETURN, regex);
-            Tokens.Add(TokenType.RETURN);
+            regex = new Regex(@"(\+|-)", RegexOptions.Compiled);
+            Patterns.Add(TokenType.PLUSMINUS, regex);
+            Tokens.Add(TokenType.PLUSMINUS);
 
-            regex = new Regex(@"=>", RegexOptions.Compiled);
-            Patterns.Add(TokenType.ARROW, regex);
-            Tokens.Add(TokenType.ARROW);
-
-            regex = new Regex(@"if", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            Patterns.Add(TokenType.IF, regex);
-            Tokens.Add(TokenType.IF);
-
-            regex = new Regex(@"else", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            Patterns.Add(TokenType.ELSE, regex);
-            Tokens.Add(TokenType.ELSE);
-
-            regex = new Regex(@"for", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            Patterns.Add(TokenType.FOR, regex);
-            Tokens.Add(TokenType.FOR);
-
-            regex = new Regex(@"to", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            Patterns.Add(TokenType.TO, regex);
-            Tokens.Add(TokenType.TO);
-
-            regex = new Regex(@"incby", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            Patterns.Add(TokenType.INCBY, regex);
-            Tokens.Add(TokenType.INCBY);
-
-            regex = new Regex(@"while", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            Patterns.Add(TokenType.WHILE, regex);
-            Tokens.Add(TokenType.WHILE);
-
-            regex = new Regex(@"do", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            Patterns.Add(TokenType.DO, regex);
-            Tokens.Add(TokenType.DO);
-
-            regex = new Regex(@"or", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            Patterns.Add(TokenType.OR, regex);
-            Tokens.Add(TokenType.OR);
-
-            regex = new Regex(@"and", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            Patterns.Add(TokenType.AND, regex);
-            Tokens.Add(TokenType.AND);
-
-            regex = new Regex(@"not", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            Patterns.Add(TokenType.NOT, regex);
-            Tokens.Add(TokenType.NOT);
-
-            regex = new Regex(@"in|out", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            Patterns.Add(TokenType.OPER, regex);
-            Tokens.Add(TokenType.OPER);
-
-            regex = new Regex(@"\+", RegexOptions.Compiled);
-            Patterns.Add(TokenType.PLUS, regex);
-            Tokens.Add(TokenType.PLUS);
-
-            regex = new Regex(@"-", RegexOptions.Compiled);
-            Patterns.Add(TokenType.MINUS, regex);
-            Tokens.Add(TokenType.MINUS);
-
-            regex = new Regex(@"\*", RegexOptions.Compiled);
-            Patterns.Add(TokenType.MULT, regex);
-            Tokens.Add(TokenType.MULT);
-
-            regex = new Regex(@"/", RegexOptions.Compiled);
-            Patterns.Add(TokenType.DIV, regex);
-            Tokens.Add(TokenType.DIV);
-
-            regex = new Regex(@"=|\!=|\<\=|\<|\>=|\>", RegexOptions.Compiled);
-            Patterns.Add(TokenType.COMP, regex);
-            Tokens.Add(TokenType.COMP);
-
-            regex = new Regex(@"\%", RegexOptions.Compiled);
-            Patterns.Add(TokenType.MOD, regex);
-            Tokens.Add(TokenType.MOD);
-
-            regex = new Regex(@"//", RegexOptions.Compiled);
-            Patterns.Add(TokenType.INTDIV, regex);
-            Tokens.Add(TokenType.INTDIV);
-
-            regex = new Regex(@"\^", RegexOptions.Compiled);
-            Patterns.Add(TokenType.POW, regex);
-            Tokens.Add(TokenType.POW);
-
-            regex = new Regex(@"\+\+", RegexOptions.Compiled);
-            Patterns.Add(TokenType.INC, regex);
-            Tokens.Add(TokenType.INC);
-
-            regex = new Regex(@"--", RegexOptions.Compiled);
-            Patterns.Add(TokenType.DEC, regex);
-            Tokens.Add(TokenType.DEC);
-
-            regex = new Regex(@":", RegexOptions.Compiled);
-            Patterns.Add(TokenType.COLON, regex);
-            Tokens.Add(TokenType.COLON);
-
-            regex = new Regex(@"\?", RegexOptions.Compiled);
-            Patterns.Add(TokenType.QUESTION, regex);
-            Tokens.Add(TokenType.QUESTION);
-
-            regex = new Regex(@",", RegexOptions.Compiled);
-            Patterns.Add(TokenType.COMMA, regex);
-            Tokens.Add(TokenType.COMMA);
-
-            regex = new Regex(@"\=", RegexOptions.Compiled);
-            Patterns.Add(TokenType.ASSIGN, regex);
-            Tokens.Add(TokenType.ASSIGN);
+            regex = new Regex(@"\*|/", RegexOptions.Compiled);
+            Patterns.Add(TokenType.MULTDIV, regex);
+            Tokens.Add(TokenType.MULTDIV);
 
             regex = new Regex(@"\(", RegexOptions.Compiled);
             Patterns.Add(TokenType.BROPEN, regex);
@@ -171,49 +61,9 @@ namespace TinyPG
             Patterns.Add(TokenType.BRCLOSE, regex);
             Tokens.Add(TokenType.BRCLOSE);
 
-            regex = new Regex(@"\[", RegexOptions.Compiled);
-            Patterns.Add(TokenType.SQOPEN, regex);
-            Tokens.Add(TokenType.SQOPEN);
-
-            regex = new Regex(@"\]", RegexOptions.Compiled);
-            Patterns.Add(TokenType.SQCLOSE, regex);
-            Tokens.Add(TokenType.SQCLOSE);
-
-            regex = new Regex(@"@?\""(\""\""|[^\""])*\""", RegexOptions.Compiled);
-            Patterns.Add(TokenType.STRING, regex);
-            Tokens.Add(TokenType.STRING);
-
-            regex = new Regex(@"[0-9]+", RegexOptions.Compiled);
-            Patterns.Add(TokenType.INTEGER, regex);
-            Tokens.Add(TokenType.INTEGER);
-
-            regex = new Regex(@"[0-9]*\.[0-9]+", RegexOptions.Compiled);
-            Patterns.Add(TokenType.DOUBLE, regex);
-            Tokens.Add(TokenType.DOUBLE);
-
-            regex = new Regex(@"true|false", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            Patterns.Add(TokenType.BOOL, regex);
-            Tokens.Add(TokenType.BOOL);
-
-            regex = new Regex(@"[a-zA-Z_][a-zA-Z0-9_]*(?<!(^)(end|else|do|while|for|true|false|return|to|incby|global|or|and|not))(?!\w)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-            Patterns.Add(TokenType.IDENTIFIER, regex);
-            Tokens.Add(TokenType.IDENTIFIER);
-
-            regex = new Regex(@"\s+", RegexOptions.Compiled);
-            Patterns.Add(TokenType.NEWLINE, regex);
-            Tokens.Add(TokenType.NEWLINE);
-
-            regex = new Regex(@"^$", RegexOptions.Compiled);
-            Patterns.Add(TokenType.EOF, regex);
-            Tokens.Add(TokenType.EOF);
-
             regex = new Regex(@"\s+", RegexOptions.Compiled);
             Patterns.Add(TokenType.WHITESPACE, regex);
             Tokens.Add(TokenType.WHITESPACE);
-
-            regex = new Regex(@"//[^\n]*\n?", RegexOptions.Compiled);
-            Patterns.Add(TokenType.COMMENT, regex);
-            Tokens.Add(TokenType.COMMENT);
 
 
         }
@@ -255,9 +105,6 @@ namespace TinyPG
             EndPos = tok.EndPos; // set the tokenizer to the new scan position
             CurrentLine = tok.Line + (tok.Text.Length - tok.Text.Replace("\n", "").Length);
             CurrentFile = tok.File;
-
-            _recognizedTokens.Add(tok);
-
             return tok;
         }
 
@@ -379,80 +226,18 @@ namespace TinyPG
 
             //Non terminal tokens:
             Start   = 2,
-            Program = 3,
-            Member  = 4,
-            Globalvar= 5,
-            Function= 6,
-            Parameters= 7,
-            Statements= 8,
-            Statement= 9,
-            IfStm   = 10,
-            WhileStm= 11,
-            DoStm   = 12,
-            ForStm  = 13,
-            ReturnStm= 14,
-            OperStm = 15,
-            CallOrAssign= 16,
-            Assign  = 17,
-            Variable= 18,
-            Array   = 19,
-            Call    = 20,
-            Arguments= 21,
-            Literal = 22,
-            Expr    = 23,
-            OrExpr  = 24,
-            AndExpr = 25,
-            NotExpr = 26,
-            CompExpr= 27,
-            AddExpr = 28,
-            MultExpr= 29,
-            PowExpr = 30,
-            UnaryExpr= 31,
-            Atom    = 32,
+            AddExpr = 3,
+            MultExpr= 4,
+            Atom    = 5,
 
             //Terminal tokens:
-            GLOBAL  = 33,
-            END     = 34,
-            RETURN  = 35,
-            ARROW   = 36,
-            IF      = 37,
-            ELSE    = 38,
-            FOR     = 39,
-            TO      = 40,
-            INCBY   = 41,
-            WHILE   = 42,
-            DO      = 43,
-            OR      = 44,
-            AND     = 45,
-            NOT     = 46,
-            OPER    = 47,
-            PLUS    = 48,
-            MINUS   = 49,
-            MULT    = 50,
-            DIV     = 51,
-            COMP    = 52,
-            MOD     = 53,
-            INTDIV  = 54,
-            POW     = 55,
-            INC     = 56,
-            DEC     = 57,
-            COLON   = 58,
-            QUESTION= 59,
-            COMMA   = 60,
-            ASSIGN  = 61,
-            BROPEN  = 62,
-            BRCLOSE = 63,
-            SQOPEN  = 64,
-            SQCLOSE = 65,
-            STRING  = 66,
-            INTEGER = 67,
-            DOUBLE  = 68,
-            BOOL    = 69,
-            IDENTIFIER= 70,
-            NEWLINE = 71,
-            EOF     = 72,
-            WHITESPACE= 73,
-            COMMENT = 74
+            EOF     = 6,
+            NUMBER  = 7,
+            PLUSMINUS= 8,
+            MULTDIV = 9,
+            BROPEN  = 10,
+            BRCLOSE = 11,
+            WHITESPACE= 12
     }
 
     public class Token
