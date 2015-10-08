@@ -92,6 +92,7 @@
             // textBoxProgram
             // 
             this.textBoxProgram.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxProgram.HideSelection = false;
             this.textBoxProgram.Location = new System.Drawing.Point(0, 0);
             this.textBoxProgram.Multiline = true;
             this.textBoxProgram.Name = "textBoxProgram";
@@ -102,19 +103,23 @@
             // textBoxStatus
             // 
             this.textBoxStatus.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBoxStatus.HideSelection = false;
             this.textBoxStatus.Location = new System.Drawing.Point(0, 0);
             this.textBoxStatus.Multiline = true;
             this.textBoxStatus.Name = "textBoxStatus";
+            this.textBoxStatus.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.textBoxStatus.Size = new System.Drawing.Size(373, 102);
             this.textBoxStatus.TabIndex = 0;
             // 
             // parseTreeView
             // 
             this.parseTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.parseTreeView.HideSelection = false;
             this.parseTreeView.Location = new System.Drawing.Point(0, 0);
             this.parseTreeView.Name = "parseTreeView";
             this.parseTreeView.Size = new System.Drawing.Size(321, 463);
             this.parseTreeView.TabIndex = 0;
+            this.parseTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.parseTreeView_AfterSelect);
             // 
             // menuStrip
             // 
@@ -141,25 +146,25 @@
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
             this.openToolStripMenuItem.Text = "Open";
             // 
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
             this.saveToolStripMenuItem.Text = "Save";
             // 
             // saveAsToolStripMenuItem
             // 
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
             this.saveAsToolStripMenuItem.Text = "Save as...";
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(121, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             // 
             // rUNToolStripMenuItem
@@ -174,7 +179,7 @@
             // 
             this.runToolStripMenuItem1.Name = "runToolStripMenuItem1";
             this.runToolStripMenuItem1.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.runToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.runToolStripMenuItem1.Size = new System.Drawing.Size(114, 22);
             this.runToolStripMenuItem1.Text = "Run";
             this.runToolStripMenuItem1.Click += new System.EventHandler(this.runToolStripMenuItem1_Click);
             // 

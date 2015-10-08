@@ -58,6 +58,10 @@
     <Compile Include="TinyPG\Parser.cs" />
     <Compile Include="TinyPG\ParseTree.cs" />
     <Compile Include="TinyPG\Scanner.cs" />
+    <Content Include="TinyPG\Templates\Parser.cs" />
+    <Content Include="TinyPG\Templates\ParseTree.cs" />
+    <Content Include="TinyPG\Templates\Scanner.cs" />
+    <Content Include="TinyPG\Templates\TextHighlighter.cs" />
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
@@ -84,7 +88,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>"$(SolutionDir)TinyPG\TinyPG.exe" "$(ProjectDir)TinyPG\Simple.tpg"</PreBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

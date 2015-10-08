@@ -42,7 +42,7 @@ namespace TinyPG
             return tree;
         }
 
-        private void ParseStart(ParseNode parent)
+        private void ParseStart(ParseNode parent) // NonTerminalSymbol: Start
         {
             Token tok;
             ParseNode n;
@@ -50,16 +50,16 @@ namespace TinyPG
             parent.Nodes.Add(node);
 
 
-            
-            tok = scanner.LookAhead(TokenType.GLOBAL, TokenType.IDENTIFIER);
+             // Concat Rule
+            tok = scanner.LookAhead(TokenType.GLOBAL, TokenType.IDENTIFIER); // Option Rule
             if (tok.Type == TokenType.GLOBAL
                 || tok.Type == TokenType.IDENTIFIER)
             {
-                ParseProgram(node);
+                ParseProgram(node); // NonTerminal Rule: Program
             }
 
-            
-            tok = scanner.Scan(TokenType.EOF);
+             // Concat Rule
+            tok = scanner.Scan(TokenType.EOF); // Terminal Rule: EOF
             n = node.CreateNode(tok, tok.ToString() );
             node.Token.UpdateRange(tok);
             node.Nodes.Add(n);
@@ -69,9 +69,9 @@ namespace TinyPG
             }
 
             parent.Token.UpdateRange(node.Token);
-        }
+        } // NonTerminalSymbol: Start
 
-        private void ParseProgram(ParseNode parent)
+        private void ParseProgram(ParseNode parent) // NonTerminalSymbol: Program
         {
             Token tok;
             ParseNode n;
@@ -79,16 +79,16 @@ namespace TinyPG
             parent.Nodes.Add(node);
 
 
-            
-            ParseMember(node);
+             // Concat Rule
+            ParseMember(node); // NonTerminal Rule: Member
 
-            
-            tok = scanner.LookAhead(TokenType.NEWLINE);
+             // Concat Rule
+            tok = scanner.LookAhead(TokenType.NEWLINE); // ZeroOrMore Rule
             while (tok.Type == TokenType.NEWLINE)
             {
 
-                
-                tok = scanner.Scan(TokenType.NEWLINE);
+                 // Concat Rule
+                tok = scanner.Scan(TokenType.NEWLINE); // Terminal Rule: NEWLINE
                 n = node.CreateNode(tok, tok.ToString() );
                 node.Token.UpdateRange(tok);
                 node.Nodes.Add(n);
@@ -97,44 +97,44 @@ namespace TinyPG
                     return;
                 }
 
-                
-                tok = scanner.LookAhead(TokenType.GLOBAL, TokenType.IDENTIFIER);
+                 // Concat Rule
+                tok = scanner.LookAhead(TokenType.GLOBAL, TokenType.IDENTIFIER); // Option Rule
                 if (tok.Type == TokenType.GLOBAL
                     || tok.Type == TokenType.IDENTIFIER)
                 {
-                    ParseMember(node);
+                    ParseMember(node); // NonTerminal Rule: Member
                 }
-            tok = scanner.LookAhead(TokenType.NEWLINE);
+            tok = scanner.LookAhead(TokenType.NEWLINE); // ZeroOrMore Rule
             }
 
             parent.Token.UpdateRange(node.Token);
-        }
+        } // NonTerminalSymbol: Program
 
-        private void ParseMember(ParseNode parent)
+        private void ParseMember(ParseNode parent) // NonTerminalSymbol: Member
         {
             Token tok;
             ParseNode n;
             ParseNode node = parent.CreateNode(scanner.GetToken(TokenType.Member), "Member");
             parent.Nodes.Add(node);
 
-            tok = scanner.LookAhead(TokenType.GLOBAL, TokenType.IDENTIFIER);
+            tok = scanner.LookAhead(TokenType.GLOBAL, TokenType.IDENTIFIER); // Choice Rule
             switch (tok.Type)
-            {
+            { // Choice Rule
                 case TokenType.GLOBAL:
-                    ParseGlobalvar(node);
+                    ParseGlobalvar(node); // NonTerminal Rule: Globalvar
                     break;
                 case TokenType.IDENTIFIER:
-                    ParseFunction(node);
+                    ParseFunction(node); // NonTerminal Rule: Function
                     break;
                 default:
                     tree.Errors.Add(new ParseError("Unexpected token '" + tok.Text.Replace("\n", "") + "' found. Expected GLOBAL or IDENTIFIER.", 0x0002, tok));
                     break;
-            }
+            } // Choice Rule
 
             parent.Token.UpdateRange(node.Token);
-        }
+        } // NonTerminalSymbol: Member
 
-        private void ParseGlobalvar(ParseNode parent)
+        private void ParseGlobalvar(ParseNode parent) // NonTerminalSymbol: Globalvar
         {
             Token tok;
             ParseNode n;
@@ -142,8 +142,8 @@ namespace TinyPG
             parent.Nodes.Add(node);
 
 
-            
-            tok = scanner.Scan(TokenType.GLOBAL);
+             // Concat Rule
+            tok = scanner.Scan(TokenType.GLOBAL); // Terminal Rule: GLOBAL
             n = node.CreateNode(tok, tok.ToString() );
             node.Token.UpdateRange(tok);
             node.Nodes.Add(n);
@@ -152,8 +152,8 @@ namespace TinyPG
                 return;
             }
 
-            
-            tok = scanner.Scan(TokenType.IDENTIFIER);
+             // Concat Rule
+            tok = scanner.Scan(TokenType.IDENTIFIER); // Terminal Rule: IDENTIFIER
             n = node.CreateNode(tok, tok.ToString() );
             node.Token.UpdateRange(tok);
             node.Nodes.Add(n);
@@ -162,13 +162,13 @@ namespace TinyPG
                 return;
             }
 
-            
-            tok = scanner.LookAhead(TokenType.ASSIGN);
+             // Concat Rule
+            tok = scanner.LookAhead(TokenType.ASSIGN); // Option Rule
             if (tok.Type == TokenType.ASSIGN)
             {
 
-                
-                tok = scanner.Scan(TokenType.ASSIGN);
+                 // Concat Rule
+                tok = scanner.Scan(TokenType.ASSIGN); // Terminal Rule: ASSIGN
                 n = node.CreateNode(tok, tok.ToString() );
                 node.Token.UpdateRange(tok);
                 node.Nodes.Add(n);
@@ -177,14 +177,14 @@ namespace TinyPG
                     return;
                 }
 
-                
-                ParseLiteral(node);
+                 // Concat Rule
+                ParseLiteral(node); // NonTerminal Rule: Literal
             }
 
             parent.Token.UpdateRange(node.Token);
-        }
+        } // NonTerminalSymbol: Globalvar
 
-        private void ParseFunction(ParseNode parent)
+        private void ParseFunction(ParseNode parent) // NonTerminalSymbol: Function
         {
             Token tok;
             ParseNode n;
@@ -192,8 +192,8 @@ namespace TinyPG
             parent.Nodes.Add(node);
 
 
-            
-            tok = scanner.Scan(TokenType.IDENTIFIER);
+             // Concat Rule
+            tok = scanner.Scan(TokenType.IDENTIFIER); // Terminal Rule: IDENTIFIER
             n = node.CreateNode(tok, tok.ToString() );
             node.Token.UpdateRange(tok);
             node.Nodes.Add(n);
@@ -202,13 +202,13 @@ namespace TinyPG
                 return;
             }
 
-            
-            tok = scanner.LookAhead(TokenType.BROPEN);
+             // Concat Rule
+            tok = scanner.LookAhead(TokenType.BROPEN); // Option Rule
             if (tok.Type == TokenType.BROPEN)
             {
 
-                
-                tok = scanner.Scan(TokenType.BROPEN);
+                 // Concat Rule
+                tok = scanner.Scan(TokenType.BROPEN); // Terminal Rule: BROPEN
                 n = node.CreateNode(tok, tok.ToString() );
                 node.Token.UpdateRange(tok);
                 node.Nodes.Add(n);
@@ -217,11 +217,11 @@ namespace TinyPG
                     return;
                 }
 
-                
-                ParseParameters(node);
+                 // Concat Rule
+                ParseParameters(node); // NonTerminal Rule: Parameters
 
-                
-                tok = scanner.Scan(TokenType.BRCLOSE);
+                 // Concat Rule
+                tok = scanner.Scan(TokenType.BRCLOSE); // Terminal Rule: BRCLOSE
                 n = node.CreateNode(tok, tok.ToString() );
                 node.Token.UpdateRange(tok);
                 node.Nodes.Add(n);
@@ -231,14 +231,14 @@ namespace TinyPG
                 }
             }
 
-            
-            tok = scanner.LookAhead(TokenType.ARROW, TokenType.IF, TokenType.WHILE, TokenType.DO, TokenType.FOR, TokenType.RETURN, TokenType.IDENTIFIER, TokenType.OPER, TokenType.END);
+             // Concat Rule
+            tok = scanner.LookAhead(TokenType.ARROW, TokenType.IF, TokenType.WHILE, TokenType.DO, TokenType.FOR, TokenType.RETURN, TokenType.IDENTIFIER, TokenType.OPER, TokenType.END); // Choice Rule
             switch (tok.Type)
-            {
+            { // Choice Rule
                 case TokenType.ARROW:
 
-                    
-                    tok = scanner.Scan(TokenType.ARROW);
+                     // Concat Rule
+                    tok = scanner.Scan(TokenType.ARROW); // Terminal Rule: ARROW
                     n = node.CreateNode(tok, tok.ToString() );
                     node.Token.UpdateRange(tok);
                     node.Nodes.Add(n);
@@ -247,8 +247,8 @@ namespace TinyPG
                         return;
                     }
 
-                    
-                    ParseExpr(node);
+                     // Concat Rule
+                    ParseExpr(node); // NonTerminal Rule: Expr
                     break;
                 case TokenType.IF:
                 case TokenType.WHILE:
@@ -258,17 +258,17 @@ namespace TinyPG
                 case TokenType.IDENTIFIER:
                 case TokenType.OPER:
                 case TokenType.END:
-                    ParseStatements(node);
+                    ParseStatements(node); // NonTerminal Rule: Statements
                     break;
                 default:
                     tree.Errors.Add(new ParseError("Unexpected token '" + tok.Text.Replace("\n", "") + "' found. Expected ARROW, IF, WHILE, DO, FOR, RETURN, IDENTIFIER, OPER, or END.", 0x0002, tok));
                     break;
-            }
+            } // Choice Rule
 
             parent.Token.UpdateRange(node.Token);
-        }
+        } // NonTerminalSymbol: Function
 
-        private void ParseParameters(ParseNode parent)
+        private void ParseParameters(ParseNode parent) // NonTerminalSymbol: Parameters
         {
             Token tok;
             ParseNode n;
@@ -276,8 +276,8 @@ namespace TinyPG
             parent.Nodes.Add(node);
 
 
-            
-            tok = scanner.Scan(TokenType.IDENTIFIER);
+             // Concat Rule
+            tok = scanner.Scan(TokenType.IDENTIFIER); // Terminal Rule: IDENTIFIER
             n = node.CreateNode(tok, tok.ToString() );
             node.Token.UpdateRange(tok);
             node.Nodes.Add(n);
@@ -286,13 +286,13 @@ namespace TinyPG
                 return;
             }
 
-            
-            tok = scanner.LookAhead(TokenType.COMMA);
+             // Concat Rule
+            tok = scanner.LookAhead(TokenType.COMMA); // ZeroOrMore Rule
             while (tok.Type == TokenType.COMMA)
             {
 
-                
-                tok = scanner.Scan(TokenType.COMMA);
+                 // Concat Rule
+                tok = scanner.Scan(TokenType.COMMA); // Terminal Rule: COMMA
                 n = node.CreateNode(tok, tok.ToString() );
                 node.Token.UpdateRange(tok);
                 node.Nodes.Add(n);
@@ -301,8 +301,8 @@ namespace TinyPG
                     return;
                 }
 
-                
-                tok = scanner.Scan(TokenType.IDENTIFIER);
+                 // Concat Rule
+                tok = scanner.Scan(TokenType.IDENTIFIER); // Terminal Rule: IDENTIFIER
                 n = node.CreateNode(tok, tok.ToString() );
                 node.Token.UpdateRange(tok);
                 node.Nodes.Add(n);
@@ -310,13 +310,13 @@ namespace TinyPG
                     tree.Errors.Add(new ParseError("Unexpected token '" + tok.Text.Replace("\n", "") + "' found. Expected " + TokenType.IDENTIFIER.ToString(), 0x1001, tok));
                     return;
                 }
-            tok = scanner.LookAhead(TokenType.COMMA);
+            tok = scanner.LookAhead(TokenType.COMMA); // ZeroOrMore Rule
             }
 
             parent.Token.UpdateRange(node.Token);
-        }
+        } // NonTerminalSymbol: Parameters
 
-        private void ParseStatements(ParseNode parent)
+        private void ParseStatements(ParseNode parent) // NonTerminalSymbol: Statements
         {
             Token tok;
             ParseNode n;
@@ -324,8 +324,8 @@ namespace TinyPG
             parent.Nodes.Add(node);
 
 
-            
-            tok = scanner.LookAhead(TokenType.IF, TokenType.WHILE, TokenType.DO, TokenType.FOR, TokenType.RETURN, TokenType.IDENTIFIER, TokenType.OPER);
+             // Concat Rule
+            tok = scanner.LookAhead(TokenType.IF, TokenType.WHILE, TokenType.DO, TokenType.FOR, TokenType.RETURN, TokenType.IDENTIFIER, TokenType.OPER); // Option Rule
             if (tok.Type == TokenType.IF
                 || tok.Type == TokenType.WHILE
                 || tok.Type == TokenType.DO
@@ -335,16 +335,16 @@ namespace TinyPG
                 || tok.Type == TokenType.OPER)
             {
 
-                
-                ParseStatement(node);
+                 // Concat Rule
+                ParseStatement(node); // NonTerminal Rule: Statement
 
-                
-                tok = scanner.LookAhead(TokenType.NEWLINE);
+                 // Concat Rule
+                tok = scanner.LookAhead(TokenType.NEWLINE); // ZeroOrMore Rule
                 while (tok.Type == TokenType.NEWLINE)
                 {
 
-                    
-                    tok = scanner.Scan(TokenType.NEWLINE);
+                     // Concat Rule
+                    tok = scanner.Scan(TokenType.NEWLINE); // Terminal Rule: NEWLINE
                     n = node.CreateNode(tok, tok.ToString() );
                     node.Token.UpdateRange(tok);
                     node.Nodes.Add(n);
@@ -353,8 +353,8 @@ namespace TinyPG
                         return;
                     }
 
-                    
-                    tok = scanner.LookAhead(TokenType.IF, TokenType.WHILE, TokenType.DO, TokenType.FOR, TokenType.RETURN, TokenType.IDENTIFIER, TokenType.OPER);
+                     // Concat Rule
+                    tok = scanner.LookAhead(TokenType.IF, TokenType.WHILE, TokenType.DO, TokenType.FOR, TokenType.RETURN, TokenType.IDENTIFIER, TokenType.OPER); // Option Rule
                     if (tok.Type == TokenType.IF
                         || tok.Type == TokenType.WHILE
                         || tok.Type == TokenType.DO
@@ -363,14 +363,14 @@ namespace TinyPG
                         || tok.Type == TokenType.IDENTIFIER
                         || tok.Type == TokenType.OPER)
                     {
-                        ParseStatement(node);
+                        ParseStatement(node); // NonTerminal Rule: Statement
                     }
-                tok = scanner.LookAhead(TokenType.NEWLINE);
+                tok = scanner.LookAhead(TokenType.NEWLINE); // ZeroOrMore Rule
                 }
             }
 
-            
-            tok = scanner.Scan(TokenType.END);
+             // Concat Rule
+            tok = scanner.Scan(TokenType.END); // Terminal Rule: END
             n = node.CreateNode(tok, tok.ToString() );
             node.Token.UpdateRange(tok);
             node.Nodes.Add(n);
@@ -380,48 +380,48 @@ namespace TinyPG
             }
 
             parent.Token.UpdateRange(node.Token);
-        }
+        } // NonTerminalSymbol: Statements
 
-        private void ParseStatement(ParseNode parent)
+        private void ParseStatement(ParseNode parent) // NonTerminalSymbol: Statement
         {
             Token tok;
             ParseNode n;
             ParseNode node = parent.CreateNode(scanner.GetToken(TokenType.Statement), "Statement");
             parent.Nodes.Add(node);
 
-            tok = scanner.LookAhead(TokenType.IF, TokenType.WHILE, TokenType.DO, TokenType.FOR, TokenType.RETURN, TokenType.IDENTIFIER, TokenType.OPER);
+            tok = scanner.LookAhead(TokenType.IF, TokenType.WHILE, TokenType.DO, TokenType.FOR, TokenType.RETURN, TokenType.IDENTIFIER, TokenType.OPER); // Choice Rule
             switch (tok.Type)
-            {
+            { // Choice Rule
                 case TokenType.IF:
-                    ParseIfStm(node);
+                    ParseIfStm(node); // NonTerminal Rule: IfStm
                     break;
                 case TokenType.WHILE:
-                    ParseWhileStm(node);
+                    ParseWhileStm(node); // NonTerminal Rule: WhileStm
                     break;
                 case TokenType.DO:
-                    ParseDoStm(node);
+                    ParseDoStm(node); // NonTerminal Rule: DoStm
                     break;
                 case TokenType.FOR:
-                    ParseForStm(node);
+                    ParseForStm(node); // NonTerminal Rule: ForStm
                     break;
                 case TokenType.RETURN:
-                    ParseReturnStm(node);
+                    ParseReturnStm(node); // NonTerminal Rule: ReturnStm
                     break;
                 case TokenType.IDENTIFIER:
-                    ParseCallOrAssign(node);
+                    ParseCallOrAssign(node); // NonTerminal Rule: CallOrAssign
                     break;
                 case TokenType.OPER:
-                    ParseOperStm(node);
+                    ParseOperStm(node); // NonTerminal Rule: OperStm
                     break;
                 default:
                     tree.Errors.Add(new ParseError("Unexpected token '" + tok.Text.Replace("\n", "") + "' found. Expected IF, WHILE, DO, FOR, RETURN, IDENTIFIER, or OPER.", 0x0002, tok));
                     break;
-            }
+            } // Choice Rule
 
             parent.Token.UpdateRange(node.Token);
-        }
+        } // NonTerminalSymbol: Statement
 
-        private void ParseIfStm(ParseNode parent)
+        private void ParseIfStm(ParseNode parent) // NonTerminalSymbol: IfStm
         {
             Token tok;
             ParseNode n;
@@ -429,8 +429,8 @@ namespace TinyPG
             parent.Nodes.Add(node);
 
 
-            
-            tok = scanner.Scan(TokenType.IF);
+             // Concat Rule
+            tok = scanner.Scan(TokenType.IF); // Terminal Rule: IF
             n = node.CreateNode(tok, tok.ToString() );
             node.Token.UpdateRange(tok);
             node.Nodes.Add(n);
@@ -439,19 +439,19 @@ namespace TinyPG
                 return;
             }
 
-            
-            ParseExpr(node);
+             // Concat Rule
+            ParseExpr(node); // NonTerminal Rule: Expr
 
-            
-            ParseStatements(node);
+             // Concat Rule
+            ParseStatements(node); // NonTerminal Rule: Statements
 
-            
-            tok = scanner.LookAhead(TokenType.ELSE);
+             // Concat Rule
+            tok = scanner.LookAhead(TokenType.ELSE); // Option Rule
             if (tok.Type == TokenType.ELSE)
             {
 
-                
-                tok = scanner.Scan(TokenType.ELSE);
+                 // Concat Rule
+                tok = scanner.Scan(TokenType.ELSE); // Terminal Rule: ELSE
                 n = node.CreateNode(tok, tok.ToString() );
                 node.Token.UpdateRange(tok);
                 node.Nodes.Add(n);
@@ -460,14 +460,14 @@ namespace TinyPG
                     return;
                 }
 
-                
-                ParseStatements(node);
+                 // Concat Rule
+                ParseStatements(node); // NonTerminal Rule: Statements
             }
 
             parent.Token.UpdateRange(node.Token);
-        }
+        } // NonTerminalSymbol: IfStm
 
-        private void ParseWhileStm(ParseNode parent)
+        private void ParseWhileStm(ParseNode parent) // NonTerminalSymbol: WhileStm
         {
             Token tok;
             ParseNode n;
@@ -475,8 +475,8 @@ namespace TinyPG
             parent.Nodes.Add(node);
 
 
-            
-            tok = scanner.Scan(TokenType.WHILE);
+             // Concat Rule
+            tok = scanner.Scan(TokenType.WHILE); // Terminal Rule: WHILE
             n = node.CreateNode(tok, tok.ToString() );
             node.Token.UpdateRange(tok);
             node.Nodes.Add(n);
@@ -485,8 +485,8 @@ namespace TinyPG
                 return;
             }
 
-            
-            tok = scanner.LookAhead(TokenType.NOT, TokenType.MINUS, TokenType.PLUS, TokenType.INC, TokenType.DEC, TokenType.INTEGER, TokenType.DOUBLE, TokenType.STRING, TokenType.BOOL, TokenType.IDENTIFIER, TokenType.BROPEN);
+             // Concat Rule
+            tok = scanner.LookAhead(TokenType.NOT, TokenType.MINUS, TokenType.PLUS, TokenType.INC, TokenType.DEC, TokenType.INTEGER, TokenType.DOUBLE, TokenType.STRING, TokenType.BOOL, TokenType.IDENTIFIER, TokenType.BROPEN); // Option Rule
             if (tok.Type == TokenType.NOT
                 || tok.Type == TokenType.MINUS
                 || tok.Type == TokenType.PLUS
@@ -499,16 +499,16 @@ namespace TinyPG
                 || tok.Type == TokenType.IDENTIFIER
                 || tok.Type == TokenType.BROPEN)
             {
-                ParseExpr(node);
+                ParseExpr(node); // NonTerminal Rule: Expr
             }
 
-            
-            ParseStatements(node);
+             // Concat Rule
+            ParseStatements(node); // NonTerminal Rule: Statements
 
             parent.Token.UpdateRange(node.Token);
-        }
+        } // NonTerminalSymbol: WhileStm
 
-        private void ParseDoStm(ParseNode parent)
+        private void ParseDoStm(ParseNode parent) // NonTerminalSymbol: DoStm
         {
             Token tok;
             ParseNode n;
@@ -516,8 +516,8 @@ namespace TinyPG
             parent.Nodes.Add(node);
 
 
-            
-            tok = scanner.Scan(TokenType.DO);
+             // Concat Rule
+            tok = scanner.Scan(TokenType.DO); // Terminal Rule: DO
             n = node.CreateNode(tok, tok.ToString() );
             node.Token.UpdateRange(tok);
             node.Nodes.Add(n);
@@ -526,11 +526,11 @@ namespace TinyPG
                 return;
             }
 
-            
-            ParseStatements(node);
+             // Concat Rule
+            ParseStatements(node); // NonTerminal Rule: Statements
 
-            
-            tok = scanner.Scan(TokenType.WHILE);
+             // Concat Rule
+            tok = scanner.Scan(TokenType.WHILE); // Terminal Rule: WHILE
             n = node.CreateNode(tok, tok.ToString() );
             node.Token.UpdateRange(tok);
             node.Nodes.Add(n);
@@ -539,13 +539,13 @@ namespace TinyPG
                 return;
             }
 
-            
-            ParseExpr(node);
+             // Concat Rule
+            ParseExpr(node); // NonTerminal Rule: Expr
 
             parent.Token.UpdateRange(node.Token);
-        }
+        } // NonTerminalSymbol: DoStm
 
-        private void ParseForStm(ParseNode parent)
+        private void ParseForStm(ParseNode parent) // NonTerminalSymbol: ForStm
         {
             Token tok;
             ParseNode n;
@@ -553,8 +553,8 @@ namespace TinyPG
             parent.Nodes.Add(node);
 
 
-            
-            tok = scanner.Scan(TokenType.FOR);
+             // Concat Rule
+            tok = scanner.Scan(TokenType.FOR); // Terminal Rule: FOR
             n = node.CreateNode(tok, tok.ToString() );
             node.Token.UpdateRange(tok);
             node.Nodes.Add(n);
@@ -563,14 +563,14 @@ namespace TinyPG
                 return;
             }
 
-            
-            ParseVariable(node);
+             // Concat Rule
+            ParseVariable(node); // NonTerminal Rule: Variable
 
-            
-            ParseAssign(node);
+             // Concat Rule
+            ParseAssign(node); // NonTerminal Rule: Assign
 
-            
-            tok = scanner.Scan(TokenType.TO);
+             // Concat Rule
+            tok = scanner.Scan(TokenType.TO); // Terminal Rule: TO
             n = node.CreateNode(tok, tok.ToString() );
             node.Token.UpdateRange(tok);
             node.Nodes.Add(n);
@@ -579,16 +579,16 @@ namespace TinyPG
                 return;
             }
 
-            
-            ParseExpr(node);
+             // Concat Rule
+            ParseExpr(node); // NonTerminal Rule: Expr
 
-            
-            tok = scanner.LookAhead(TokenType.INCBY);
+             // Concat Rule
+            tok = scanner.LookAhead(TokenType.INCBY); // Option Rule
             if (tok.Type == TokenType.INCBY)
             {
 
-                
-                tok = scanner.Scan(TokenType.INCBY);
+                 // Concat Rule
+                tok = scanner.Scan(TokenType.INCBY); // Terminal Rule: INCBY
                 n = node.CreateNode(tok, tok.ToString() );
                 node.Token.UpdateRange(tok);
                 node.Nodes.Add(n);
@@ -597,17 +597,17 @@ namespace TinyPG
                     return;
                 }
 
-                
-                ParseExpr(node);
+                 // Concat Rule
+                ParseExpr(node); // NonTerminal Rule: Expr
             }
 
-            
-            ParseStatements(node);
+             // Concat Rule
+            ParseStatements(node); // NonTerminal Rule: Statements
 
             parent.Token.UpdateRange(node.Token);
-        }
+        } // NonTerminalSymbol: ForStm
 
-        private void ParseReturnStm(ParseNode parent)
+        private void ParseReturnStm(ParseNode parent) // NonTerminalSymbol: ReturnStm
         {
             Token tok;
             ParseNode n;
@@ -615,8 +615,8 @@ namespace TinyPG
             parent.Nodes.Add(node);
 
 
-            
-            tok = scanner.Scan(TokenType.RETURN);
+             // Concat Rule
+            tok = scanner.Scan(TokenType.RETURN); // Terminal Rule: RETURN
             n = node.CreateNode(tok, tok.ToString() );
             node.Token.UpdateRange(tok);
             node.Nodes.Add(n);
@@ -625,8 +625,8 @@ namespace TinyPG
                 return;
             }
 
-            
-            tok = scanner.LookAhead(TokenType.NOT, TokenType.MINUS, TokenType.PLUS, TokenType.INC, TokenType.DEC, TokenType.INTEGER, TokenType.DOUBLE, TokenType.STRING, TokenType.BOOL, TokenType.IDENTIFIER, TokenType.BROPEN);
+             // Concat Rule
+            tok = scanner.LookAhead(TokenType.NOT, TokenType.MINUS, TokenType.PLUS, TokenType.INC, TokenType.DEC, TokenType.INTEGER, TokenType.DOUBLE, TokenType.STRING, TokenType.BOOL, TokenType.IDENTIFIER, TokenType.BROPEN); // Option Rule
             if (tok.Type == TokenType.NOT
                 || tok.Type == TokenType.MINUS
                 || tok.Type == TokenType.PLUS
@@ -639,13 +639,13 @@ namespace TinyPG
                 || tok.Type == TokenType.IDENTIFIER
                 || tok.Type == TokenType.BROPEN)
             {
-                ParseExpr(node);
+                ParseExpr(node); // NonTerminal Rule: Expr
             }
 
             parent.Token.UpdateRange(node.Token);
-        }
+        } // NonTerminalSymbol: ReturnStm
 
-        private void ParseOperStm(ParseNode parent)
+        private void ParseOperStm(ParseNode parent) // NonTerminalSymbol: OperStm
         {
             Token tok;
             ParseNode n;
@@ -653,8 +653,8 @@ namespace TinyPG
             parent.Nodes.Add(node);
 
 
-            
-            tok = scanner.Scan(TokenType.OPER);
+             // Concat Rule
+            tok = scanner.Scan(TokenType.OPER); // Terminal Rule: OPER
             n = node.CreateNode(tok, tok.ToString() );
             node.Token.UpdateRange(tok);
             node.Nodes.Add(n);
@@ -663,17 +663,17 @@ namespace TinyPG
                 return;
             }
 
-            
-            tok = scanner.LookAhead(TokenType.BROPEN);
+             // Concat Rule
+            tok = scanner.LookAhead(TokenType.BROPEN); // Option Rule
             if (tok.Type == TokenType.BROPEN)
             {
-                ParseCall(node);
+                ParseCall(node); // NonTerminal Rule: Call
             }
 
             parent.Token.UpdateRange(node.Token);
-        }
+        } // NonTerminalSymbol: OperStm
 
-        private void ParseCallOrAssign(ParseNode parent)
+        private void ParseCallOrAssign(ParseNode parent) // NonTerminalSymbol: CallOrAssign
         {
             Token tok;
             ParseNode n;
@@ -681,20 +681,20 @@ namespace TinyPG
             parent.Nodes.Add(node);
 
 
-            
-            ParseVariable(node);
+             // Concat Rule
+            ParseVariable(node); // NonTerminal Rule: Variable
 
-            
-            tok = scanner.LookAhead(TokenType.ASSIGN);
+             // Concat Rule
+            tok = scanner.LookAhead(TokenType.ASSIGN); // Option Rule
             if (tok.Type == TokenType.ASSIGN)
             {
-                ParseAssign(node);
+                ParseAssign(node); // NonTerminal Rule: Assign
             }
 
             parent.Token.UpdateRange(node.Token);
-        }
+        } // NonTerminalSymbol: CallOrAssign
 
-        private void ParseAssign(ParseNode parent)
+        private void ParseAssign(ParseNode parent) // NonTerminalSymbol: Assign
         {
             Token tok;
             ParseNode n;
@@ -702,8 +702,8 @@ namespace TinyPG
             parent.Nodes.Add(node);
 
 
-            
-            tok = scanner.Scan(TokenType.ASSIGN);
+             // Concat Rule
+            tok = scanner.Scan(TokenType.ASSIGN); // Terminal Rule: ASSIGN
             n = node.CreateNode(tok, tok.ToString() );
             node.Token.UpdateRange(tok);
             node.Nodes.Add(n);
@@ -712,13 +712,13 @@ namespace TinyPG
                 return;
             }
 
-            
-            ParseExpr(node);
+             // Concat Rule
+            ParseExpr(node); // NonTerminal Rule: Expr
 
             parent.Token.UpdateRange(node.Token);
-        }
+        } // NonTerminalSymbol: Assign
 
-        private void ParseVariable(ParseNode parent)
+        private void ParseVariable(ParseNode parent) // NonTerminalSymbol: Variable
         {
             Token tok;
             ParseNode n;
@@ -726,8 +726,8 @@ namespace TinyPG
             parent.Nodes.Add(node);
 
 
-            
-            tok = scanner.Scan(TokenType.IDENTIFIER);
+             // Concat Rule
+            tok = scanner.Scan(TokenType.IDENTIFIER); // Terminal Rule: IDENTIFIER
             n = node.CreateNode(tok, tok.ToString() );
             node.Token.UpdateRange(tok);
             node.Nodes.Add(n);
@@ -736,30 +736,30 @@ namespace TinyPG
                 return;
             }
 
-            
-            tok = scanner.LookAhead(TokenType.SQOPEN, TokenType.BROPEN);
+             // Concat Rule
+            tok = scanner.LookAhead(TokenType.SQOPEN, TokenType.BROPEN); // Option Rule
             if (tok.Type == TokenType.SQOPEN
                 || tok.Type == TokenType.BROPEN)
             {
-                tok = scanner.LookAhead(TokenType.SQOPEN, TokenType.BROPEN);
+                tok = scanner.LookAhead(TokenType.SQOPEN, TokenType.BROPEN); // Choice Rule
                 switch (tok.Type)
-                {
+                { // Choice Rule
                     case TokenType.SQOPEN:
-                        ParseArray(node);
+                        ParseArray(node); // NonTerminal Rule: Array
                         break;
                     case TokenType.BROPEN:
-                        ParseCall(node);
+                        ParseCall(node); // NonTerminal Rule: Call
                         break;
                     default:
                         tree.Errors.Add(new ParseError("Unexpected token '" + tok.Text.Replace("\n", "") + "' found. Expected SQOPEN or BROPEN.", 0x0002, tok));
                         break;
-                }
+                } // Choice Rule
             }
 
             parent.Token.UpdateRange(node.Token);
-        }
+        } // NonTerminalSymbol: Variable
 
-        private void ParseArray(ParseNode parent)
+        private void ParseArray(ParseNode parent) // NonTerminalSymbol: Array
         {
             Token tok;
             ParseNode n;
@@ -767,8 +767,8 @@ namespace TinyPG
             parent.Nodes.Add(node);
 
 
-            
-            tok = scanner.Scan(TokenType.SQOPEN);
+             // Concat Rule
+            tok = scanner.Scan(TokenType.SQOPEN); // Terminal Rule: SQOPEN
             n = node.CreateNode(tok, tok.ToString() );
             node.Token.UpdateRange(tok);
             node.Nodes.Add(n);
@@ -777,11 +777,11 @@ namespace TinyPG
                 return;
             }
 
-            
-            ParseExpr(node);
+             // Concat Rule
+            ParseExpr(node); // NonTerminal Rule: Expr
 
-            
-            tok = scanner.Scan(TokenType.SQCLOSE);
+             // Concat Rule
+            tok = scanner.Scan(TokenType.SQCLOSE); // Terminal Rule: SQCLOSE
             n = node.CreateNode(tok, tok.ToString() );
             node.Token.UpdateRange(tok);
             node.Nodes.Add(n);
@@ -791,9 +791,9 @@ namespace TinyPG
             }
 
             parent.Token.UpdateRange(node.Token);
-        }
+        } // NonTerminalSymbol: Array
 
-        private void ParseCall(ParseNode parent)
+        private void ParseCall(ParseNode parent) // NonTerminalSymbol: Call
         {
             Token tok;
             ParseNode n;
@@ -801,8 +801,8 @@ namespace TinyPG
             parent.Nodes.Add(node);
 
 
-            
-            tok = scanner.Scan(TokenType.BROPEN);
+             // Concat Rule
+            tok = scanner.Scan(TokenType.BROPEN); // Terminal Rule: BROPEN
             n = node.CreateNode(tok, tok.ToString() );
             node.Token.UpdateRange(tok);
             node.Nodes.Add(n);
@@ -811,8 +811,8 @@ namespace TinyPG
                 return;
             }
 
-            
-            tok = scanner.LookAhead(TokenType.NOT, TokenType.MINUS, TokenType.PLUS, TokenType.INC, TokenType.DEC, TokenType.INTEGER, TokenType.DOUBLE, TokenType.STRING, TokenType.BOOL, TokenType.IDENTIFIER, TokenType.BROPEN);
+             // Concat Rule
+            tok = scanner.LookAhead(TokenType.NOT, TokenType.MINUS, TokenType.PLUS, TokenType.INC, TokenType.DEC, TokenType.INTEGER, TokenType.DOUBLE, TokenType.STRING, TokenType.BOOL, TokenType.IDENTIFIER, TokenType.BROPEN); // Option Rule
             if (tok.Type == TokenType.NOT
                 || tok.Type == TokenType.MINUS
                 || tok.Type == TokenType.PLUS
@@ -825,11 +825,11 @@ namespace TinyPG
                 || tok.Type == TokenType.IDENTIFIER
                 || tok.Type == TokenType.BROPEN)
             {
-                ParseArguments(node);
+                ParseArguments(node); // NonTerminal Rule: Arguments
             }
 
-            
-            tok = scanner.Scan(TokenType.BRCLOSE);
+             // Concat Rule
+            tok = scanner.Scan(TokenType.BRCLOSE); // Terminal Rule: BRCLOSE
             n = node.CreateNode(tok, tok.ToString() );
             node.Token.UpdateRange(tok);
             node.Nodes.Add(n);
@@ -839,9 +839,9 @@ namespace TinyPG
             }
 
             parent.Token.UpdateRange(node.Token);
-        }
+        } // NonTerminalSymbol: Call
 
-        private void ParseArguments(ParseNode parent)
+        private void ParseArguments(ParseNode parent) // NonTerminalSymbol: Arguments
         {
             Token tok;
             ParseNode n;
@@ -849,16 +849,16 @@ namespace TinyPG
             parent.Nodes.Add(node);
 
 
-            
-            ParseExpr(node);
+             // Concat Rule
+            ParseExpr(node); // NonTerminal Rule: Expr
 
-            
-            tok = scanner.LookAhead(TokenType.COMMA);
+             // Concat Rule
+            tok = scanner.LookAhead(TokenType.COMMA); // ZeroOrMore Rule
             while (tok.Type == TokenType.COMMA)
             {
 
-                
-                tok = scanner.Scan(TokenType.COMMA);
+                 // Concat Rule
+                tok = scanner.Scan(TokenType.COMMA); // Terminal Rule: COMMA
                 n = node.CreateNode(tok, tok.ToString() );
                 node.Token.UpdateRange(tok);
                 node.Nodes.Add(n);
@@ -867,26 +867,26 @@ namespace TinyPG
                     return;
                 }
 
-                
-                ParseExpr(node);
-            tok = scanner.LookAhead(TokenType.COMMA);
+                 // Concat Rule
+                ParseExpr(node); // NonTerminal Rule: Expr
+            tok = scanner.LookAhead(TokenType.COMMA); // ZeroOrMore Rule
             }
 
             parent.Token.UpdateRange(node.Token);
-        }
+        } // NonTerminalSymbol: Arguments
 
-        private void ParseLiteral(ParseNode parent)
+        private void ParseLiteral(ParseNode parent) // NonTerminalSymbol: Literal
         {
             Token tok;
             ParseNode n;
             ParseNode node = parent.CreateNode(scanner.GetToken(TokenType.Literal), "Literal");
             parent.Nodes.Add(node);
 
-            tok = scanner.LookAhead(TokenType.INTEGER, TokenType.DOUBLE, TokenType.STRING, TokenType.BOOL);
+            tok = scanner.LookAhead(TokenType.INTEGER, TokenType.DOUBLE, TokenType.STRING, TokenType.BOOL); // Choice Rule
             switch (tok.Type)
-            {
+            { // Choice Rule
                 case TokenType.INTEGER:
-                    tok = scanner.Scan(TokenType.INTEGER);
+                    tok = scanner.Scan(TokenType.INTEGER); // Terminal Rule: INTEGER
                     n = node.CreateNode(tok, tok.ToString() );
                     node.Token.UpdateRange(tok);
                     node.Nodes.Add(n);
@@ -896,7 +896,7 @@ namespace TinyPG
                     }
                     break;
                 case TokenType.DOUBLE:
-                    tok = scanner.Scan(TokenType.DOUBLE);
+                    tok = scanner.Scan(TokenType.DOUBLE); // Terminal Rule: DOUBLE
                     n = node.CreateNode(tok, tok.ToString() );
                     node.Token.UpdateRange(tok);
                     node.Nodes.Add(n);
@@ -906,7 +906,7 @@ namespace TinyPG
                     }
                     break;
                 case TokenType.STRING:
-                    tok = scanner.Scan(TokenType.STRING);
+                    tok = scanner.Scan(TokenType.STRING); // Terminal Rule: STRING
                     n = node.CreateNode(tok, tok.ToString() );
                     node.Token.UpdateRange(tok);
                     node.Nodes.Add(n);
@@ -916,7 +916,7 @@ namespace TinyPG
                     }
                     break;
                 case TokenType.BOOL:
-                    tok = scanner.Scan(TokenType.BOOL);
+                    tok = scanner.Scan(TokenType.BOOL); // Terminal Rule: BOOL
                     n = node.CreateNode(tok, tok.ToString() );
                     node.Token.UpdateRange(tok);
                     node.Nodes.Add(n);
@@ -928,12 +928,12 @@ namespace TinyPG
                 default:
                     tree.Errors.Add(new ParseError("Unexpected token '" + tok.Text.Replace("\n", "") + "' found. Expected INTEGER, DOUBLE, STRING, or BOOL.", 0x0002, tok));
                     break;
-            }
+            } // Choice Rule
 
             parent.Token.UpdateRange(node.Token);
-        }
+        } // NonTerminalSymbol: Literal
 
-        private void ParseExpr(ParseNode parent)
+        private void ParseExpr(ParseNode parent) // NonTerminalSymbol: Expr
         {
             Token tok;
             ParseNode n;
@@ -941,16 +941,16 @@ namespace TinyPG
             parent.Nodes.Add(node);
 
 
-            
-            ParseOrExpr(node);
+             // Concat Rule
+            ParseOrExpr(node); // NonTerminal Rule: OrExpr
 
-            
-            tok = scanner.LookAhead(TokenType.QUESTION);
+             // Concat Rule
+            tok = scanner.LookAhead(TokenType.QUESTION); // Option Rule
             if (tok.Type == TokenType.QUESTION)
             {
 
-                
-                tok = scanner.Scan(TokenType.QUESTION);
+                 // Concat Rule
+                tok = scanner.Scan(TokenType.QUESTION); // Terminal Rule: QUESTION
                 n = node.CreateNode(tok, tok.ToString() );
                 node.Token.UpdateRange(tok);
                 node.Nodes.Add(n);
@@ -959,11 +959,11 @@ namespace TinyPG
                     return;
                 }
 
-                
-                ParseExpr(node);
+                 // Concat Rule
+                ParseExpr(node); // NonTerminal Rule: Expr
 
-                
-                tok = scanner.Scan(TokenType.COLON);
+                 // Concat Rule
+                tok = scanner.Scan(TokenType.COLON); // Terminal Rule: COLON
                 n = node.CreateNode(tok, tok.ToString() );
                 node.Token.UpdateRange(tok);
                 node.Nodes.Add(n);
@@ -972,14 +972,14 @@ namespace TinyPG
                     return;
                 }
 
-                
-                ParseExpr(node);
+                 // Concat Rule
+                ParseExpr(node); // NonTerminal Rule: Expr
             }
 
             parent.Token.UpdateRange(node.Token);
-        }
+        } // NonTerminalSymbol: Expr
 
-        private void ParseOrExpr(ParseNode parent)
+        private void ParseOrExpr(ParseNode parent) // NonTerminalSymbol: OrExpr
         {
             Token tok;
             ParseNode n;
@@ -987,16 +987,16 @@ namespace TinyPG
             parent.Nodes.Add(node);
 
 
-            
-            ParseAndExpr(node);
+             // Concat Rule
+            ParseAndExpr(node); // NonTerminal Rule: AndExpr
 
-            
-            tok = scanner.LookAhead(TokenType.OR);
+             // Concat Rule
+            tok = scanner.LookAhead(TokenType.OR); // ZeroOrMore Rule
             while (tok.Type == TokenType.OR)
             {
 
-                
-                tok = scanner.Scan(TokenType.OR);
+                 // Concat Rule
+                tok = scanner.Scan(TokenType.OR); // Terminal Rule: OR
                 n = node.CreateNode(tok, tok.ToString() );
                 node.Token.UpdateRange(tok);
                 node.Nodes.Add(n);
@@ -1005,15 +1005,15 @@ namespace TinyPG
                     return;
                 }
 
-                
-                ParseAndExpr(node);
-            tok = scanner.LookAhead(TokenType.OR);
+                 // Concat Rule
+                ParseAndExpr(node); // NonTerminal Rule: AndExpr
+            tok = scanner.LookAhead(TokenType.OR); // ZeroOrMore Rule
             }
 
             parent.Token.UpdateRange(node.Token);
-        }
+        } // NonTerminalSymbol: OrExpr
 
-        private void ParseAndExpr(ParseNode parent)
+        private void ParseAndExpr(ParseNode parent) // NonTerminalSymbol: AndExpr
         {
             Token tok;
             ParseNode n;
@@ -1021,16 +1021,16 @@ namespace TinyPG
             parent.Nodes.Add(node);
 
 
-            
-            ParseNotExpr(node);
+             // Concat Rule
+            ParseNotExpr(node); // NonTerminal Rule: NotExpr
 
-            
-            tok = scanner.LookAhead(TokenType.AND);
+             // Concat Rule
+            tok = scanner.LookAhead(TokenType.AND); // ZeroOrMore Rule
             while (tok.Type == TokenType.AND)
             {
 
-                
-                tok = scanner.Scan(TokenType.AND);
+                 // Concat Rule
+                tok = scanner.Scan(TokenType.AND); // Terminal Rule: AND
                 n = node.CreateNode(tok, tok.ToString() );
                 node.Token.UpdateRange(tok);
                 node.Nodes.Add(n);
@@ -1039,15 +1039,15 @@ namespace TinyPG
                     return;
                 }
 
-                
-                ParseNotExpr(node);
-            tok = scanner.LookAhead(TokenType.AND);
+                 // Concat Rule
+                ParseNotExpr(node); // NonTerminal Rule: NotExpr
+            tok = scanner.LookAhead(TokenType.AND); // ZeroOrMore Rule
             }
 
             parent.Token.UpdateRange(node.Token);
-        }
+        } // NonTerminalSymbol: AndExpr
 
-        private void ParseNotExpr(ParseNode parent)
+        private void ParseNotExpr(ParseNode parent) // NonTerminalSymbol: NotExpr
         {
             Token tok;
             ParseNode n;
@@ -1055,11 +1055,11 @@ namespace TinyPG
             parent.Nodes.Add(node);
 
 
-            
-            tok = scanner.LookAhead(TokenType.NOT);
+             // Concat Rule
+            tok = scanner.LookAhead(TokenType.NOT); // Option Rule
             if (tok.Type == TokenType.NOT)
             {
-                tok = scanner.Scan(TokenType.NOT);
+                tok = scanner.Scan(TokenType.NOT); // Terminal Rule: NOT
                 n = node.CreateNode(tok, tok.ToString() );
                 node.Token.UpdateRange(tok);
                 node.Nodes.Add(n);
@@ -1069,13 +1069,13 @@ namespace TinyPG
                 }
             }
 
-            
-            ParseCompExpr(node);
+             // Concat Rule
+            ParseCompExpr(node); // NonTerminal Rule: CompExpr
 
             parent.Token.UpdateRange(node.Token);
-        }
+        } // NonTerminalSymbol: NotExpr
 
-        private void ParseCompExpr(ParseNode parent)
+        private void ParseCompExpr(ParseNode parent) // NonTerminalSymbol: CompExpr
         {
             Token tok;
             ParseNode n;
@@ -1083,16 +1083,16 @@ namespace TinyPG
             parent.Nodes.Add(node);
 
 
-            
-            ParseAddExpr(node);
+             // Concat Rule
+            ParseAddExpr(node); // NonTerminal Rule: AddExpr
 
-            
-            tok = scanner.LookAhead(TokenType.COMP);
+             // Concat Rule
+            tok = scanner.LookAhead(TokenType.COMP); // Option Rule
             if (tok.Type == TokenType.COMP)
             {
 
-                
-                tok = scanner.Scan(TokenType.COMP);
+                 // Concat Rule
+                tok = scanner.Scan(TokenType.COMP); // Terminal Rule: COMP
                 n = node.CreateNode(tok, tok.ToString() );
                 node.Token.UpdateRange(tok);
                 node.Nodes.Add(n);
@@ -1101,14 +1101,14 @@ namespace TinyPG
                     return;
                 }
 
-                
-                ParseAddExpr(node);
+                 // Concat Rule
+                ParseAddExpr(node); // NonTerminal Rule: AddExpr
             }
 
             parent.Token.UpdateRange(node.Token);
-        }
+        } // NonTerminalSymbol: CompExpr
 
-        private void ParseAddExpr(ParseNode parent)
+        private void ParseAddExpr(ParseNode parent) // NonTerminalSymbol: AddExpr
         {
             Token tok;
             ParseNode n;
@@ -1116,21 +1116,21 @@ namespace TinyPG
             parent.Nodes.Add(node);
 
 
-            
-            ParseMultExpr(node);
+             // Concat Rule
+            ParseMultExpr(node); // NonTerminal Rule: MultExpr
 
-            
-            tok = scanner.LookAhead(TokenType.PLUS, TokenType.MINUS);
+             // Concat Rule
+            tok = scanner.LookAhead(TokenType.PLUS, TokenType.MINUS); // ZeroOrMore Rule
             while (tok.Type == TokenType.PLUS
                 || tok.Type == TokenType.MINUS)
             {
 
-                
-                tok = scanner.LookAhead(TokenType.PLUS, TokenType.MINUS);
+                 // Concat Rule
+                tok = scanner.LookAhead(TokenType.PLUS, TokenType.MINUS); // Choice Rule
                 switch (tok.Type)
-                {
+                { // Choice Rule
                     case TokenType.PLUS:
-                        tok = scanner.Scan(TokenType.PLUS);
+                        tok = scanner.Scan(TokenType.PLUS); // Terminal Rule: PLUS
                         n = node.CreateNode(tok, tok.ToString() );
                         node.Token.UpdateRange(tok);
                         node.Nodes.Add(n);
@@ -1140,7 +1140,7 @@ namespace TinyPG
                         }
                         break;
                     case TokenType.MINUS:
-                        tok = scanner.Scan(TokenType.MINUS);
+                        tok = scanner.Scan(TokenType.MINUS); // Terminal Rule: MINUS
                         n = node.CreateNode(tok, tok.ToString() );
                         node.Token.UpdateRange(tok);
                         node.Nodes.Add(n);
@@ -1152,17 +1152,17 @@ namespace TinyPG
                     default:
                         tree.Errors.Add(new ParseError("Unexpected token '" + tok.Text.Replace("\n", "") + "' found. Expected PLUS or MINUS.", 0x0002, tok));
                         break;
-                }
+                } // Choice Rule
 
-                
-                ParseMultExpr(node);
-            tok = scanner.LookAhead(TokenType.PLUS, TokenType.MINUS);
+                 // Concat Rule
+                ParseMultExpr(node); // NonTerminal Rule: MultExpr
+            tok = scanner.LookAhead(TokenType.PLUS, TokenType.MINUS); // ZeroOrMore Rule
             }
 
             parent.Token.UpdateRange(node.Token);
-        }
+        } // NonTerminalSymbol: AddExpr
 
-        private void ParseMultExpr(ParseNode parent)
+        private void ParseMultExpr(ParseNode parent) // NonTerminalSymbol: MultExpr
         {
             Token tok;
             ParseNode n;
@@ -1170,23 +1170,23 @@ namespace TinyPG
             parent.Nodes.Add(node);
 
 
-            
-            ParsePowExpr(node);
+             // Concat Rule
+            ParsePowExpr(node); // NonTerminal Rule: PowExpr
 
-            
-            tok = scanner.LookAhead(TokenType.MULT, TokenType.DIV, TokenType.MOD, TokenType.INTDIV);
+             // Concat Rule
+            tok = scanner.LookAhead(TokenType.MULT, TokenType.DIV, TokenType.MOD, TokenType.INTDIV); // ZeroOrMore Rule
             while (tok.Type == TokenType.MULT
                 || tok.Type == TokenType.DIV
                 || tok.Type == TokenType.MOD
                 || tok.Type == TokenType.INTDIV)
             {
 
-                
-                tok = scanner.LookAhead(TokenType.MULT, TokenType.DIV, TokenType.MOD, TokenType.INTDIV);
+                 // Concat Rule
+                tok = scanner.LookAhead(TokenType.MULT, TokenType.DIV, TokenType.MOD, TokenType.INTDIV); // Choice Rule
                 switch (tok.Type)
-                {
+                { // Choice Rule
                     case TokenType.MULT:
-                        tok = scanner.Scan(TokenType.MULT);
+                        tok = scanner.Scan(TokenType.MULT); // Terminal Rule: MULT
                         n = node.CreateNode(tok, tok.ToString() );
                         node.Token.UpdateRange(tok);
                         node.Nodes.Add(n);
@@ -1196,7 +1196,7 @@ namespace TinyPG
                         }
                         break;
                     case TokenType.DIV:
-                        tok = scanner.Scan(TokenType.DIV);
+                        tok = scanner.Scan(TokenType.DIV); // Terminal Rule: DIV
                         n = node.CreateNode(tok, tok.ToString() );
                         node.Token.UpdateRange(tok);
                         node.Nodes.Add(n);
@@ -1206,7 +1206,7 @@ namespace TinyPG
                         }
                         break;
                     case TokenType.MOD:
-                        tok = scanner.Scan(TokenType.MOD);
+                        tok = scanner.Scan(TokenType.MOD); // Terminal Rule: MOD
                         n = node.CreateNode(tok, tok.ToString() );
                         node.Token.UpdateRange(tok);
                         node.Nodes.Add(n);
@@ -1216,7 +1216,7 @@ namespace TinyPG
                         }
                         break;
                     case TokenType.INTDIV:
-                        tok = scanner.Scan(TokenType.INTDIV);
+                        tok = scanner.Scan(TokenType.INTDIV); // Terminal Rule: INTDIV
                         n = node.CreateNode(tok, tok.ToString() );
                         node.Token.UpdateRange(tok);
                         node.Nodes.Add(n);
@@ -1228,17 +1228,17 @@ namespace TinyPG
                     default:
                         tree.Errors.Add(new ParseError("Unexpected token '" + tok.Text.Replace("\n", "") + "' found. Expected MULT, DIV, MOD, or INTDIV.", 0x0002, tok));
                         break;
-                }
+                } // Choice Rule
 
-                
-                ParsePowExpr(node);
-            tok = scanner.LookAhead(TokenType.MULT, TokenType.DIV, TokenType.MOD, TokenType.INTDIV);
+                 // Concat Rule
+                ParsePowExpr(node); // NonTerminal Rule: PowExpr
+            tok = scanner.LookAhead(TokenType.MULT, TokenType.DIV, TokenType.MOD, TokenType.INTDIV); // ZeroOrMore Rule
             }
 
             parent.Token.UpdateRange(node.Token);
-        }
+        } // NonTerminalSymbol: MultExpr
 
-        private void ParsePowExpr(ParseNode parent)
+        private void ParsePowExpr(ParseNode parent) // NonTerminalSymbol: PowExpr
         {
             Token tok;
             ParseNode n;
@@ -1246,16 +1246,16 @@ namespace TinyPG
             parent.Nodes.Add(node);
 
 
-            
-            ParseUnaryExpr(node);
+             // Concat Rule
+            ParseUnaryExpr(node); // NonTerminal Rule: UnaryExpr
 
-            
-            tok = scanner.LookAhead(TokenType.POW);
+             // Concat Rule
+            tok = scanner.LookAhead(TokenType.POW); // ZeroOrMore Rule
             while (tok.Type == TokenType.POW)
             {
 
-                
-                tok = scanner.Scan(TokenType.POW);
+                 // Concat Rule
+                tok = scanner.Scan(TokenType.POW); // Terminal Rule: POW
                 n = node.CreateNode(tok, tok.ToString() );
                 node.Token.UpdateRange(tok);
                 node.Nodes.Add(n);
@@ -1264,15 +1264,15 @@ namespace TinyPG
                     return;
                 }
 
-                
-                ParseUnaryExpr(node);
-            tok = scanner.LookAhead(TokenType.POW);
+                 // Concat Rule
+                ParseUnaryExpr(node); // NonTerminal Rule: UnaryExpr
+            tok = scanner.LookAhead(TokenType.POW); // ZeroOrMore Rule
             }
 
             parent.Token.UpdateRange(node.Token);
-        }
+        } // NonTerminalSymbol: PowExpr
 
-        private void ParseUnaryExpr(ParseNode parent)
+        private void ParseUnaryExpr(ParseNode parent) // NonTerminalSymbol: UnaryExpr
         {
             Token tok;
             ParseNode n;
@@ -1280,18 +1280,18 @@ namespace TinyPG
             parent.Nodes.Add(node);
 
 
-            
-            tok = scanner.LookAhead(TokenType.MINUS, TokenType.PLUS, TokenType.INC, TokenType.DEC);
+             // Concat Rule
+            tok = scanner.LookAhead(TokenType.MINUS, TokenType.PLUS, TokenType.INC, TokenType.DEC); // Option Rule
             if (tok.Type == TokenType.MINUS
                 || tok.Type == TokenType.PLUS
                 || tok.Type == TokenType.INC
                 || tok.Type == TokenType.DEC)
             {
-                tok = scanner.LookAhead(TokenType.MINUS, TokenType.PLUS, TokenType.INC, TokenType.DEC);
+                tok = scanner.LookAhead(TokenType.MINUS, TokenType.PLUS, TokenType.INC, TokenType.DEC); // Choice Rule
                 switch (tok.Type)
-                {
+                { // Choice Rule
                     case TokenType.MINUS:
-                        tok = scanner.Scan(TokenType.MINUS);
+                        tok = scanner.Scan(TokenType.MINUS); // Terminal Rule: MINUS
                         n = node.CreateNode(tok, tok.ToString() );
                         node.Token.UpdateRange(tok);
                         node.Nodes.Add(n);
@@ -1301,7 +1301,7 @@ namespace TinyPG
                         }
                         break;
                     case TokenType.PLUS:
-                        tok = scanner.Scan(TokenType.PLUS);
+                        tok = scanner.Scan(TokenType.PLUS); // Terminal Rule: PLUS
                         n = node.CreateNode(tok, tok.ToString() );
                         node.Token.UpdateRange(tok);
                         node.Nodes.Add(n);
@@ -1311,7 +1311,7 @@ namespace TinyPG
                         }
                         break;
                     case TokenType.INC:
-                        tok = scanner.Scan(TokenType.INC);
+                        tok = scanner.Scan(TokenType.INC); // Terminal Rule: INC
                         n = node.CreateNode(tok, tok.ToString() );
                         node.Token.UpdateRange(tok);
                         node.Nodes.Add(n);
@@ -1321,7 +1321,7 @@ namespace TinyPG
                         }
                         break;
                     case TokenType.DEC:
-                        tok = scanner.Scan(TokenType.DEC);
+                        tok = scanner.Scan(TokenType.DEC); // Terminal Rule: DEC
                         n = node.CreateNode(tok, tok.ToString() );
                         node.Token.UpdateRange(tok);
                         node.Nodes.Add(n);
@@ -1333,38 +1333,38 @@ namespace TinyPG
                     default:
                         tree.Errors.Add(new ParseError("Unexpected token '" + tok.Text.Replace("\n", "") + "' found. Expected MINUS, PLUS, INC, or DEC.", 0x0002, tok));
                         break;
-                }
+                } // Choice Rule
             }
 
-            
-            ParseAtom(node);
+             // Concat Rule
+            ParseAtom(node); // NonTerminal Rule: Atom
 
             parent.Token.UpdateRange(node.Token);
-        }
+        } // NonTerminalSymbol: UnaryExpr
 
-        private void ParseAtom(ParseNode parent)
+        private void ParseAtom(ParseNode parent) // NonTerminalSymbol: Atom
         {
             Token tok;
             ParseNode n;
             ParseNode node = parent.CreateNode(scanner.GetToken(TokenType.Atom), "Atom");
             parent.Nodes.Add(node);
 
-            tok = scanner.LookAhead(TokenType.INTEGER, TokenType.DOUBLE, TokenType.STRING, TokenType.BOOL, TokenType.IDENTIFIER, TokenType.BROPEN);
+            tok = scanner.LookAhead(TokenType.INTEGER, TokenType.DOUBLE, TokenType.STRING, TokenType.BOOL, TokenType.IDENTIFIER, TokenType.BROPEN); // Choice Rule
             switch (tok.Type)
-            {
+            { // Choice Rule
                 case TokenType.INTEGER:
                 case TokenType.DOUBLE:
                 case TokenType.STRING:
                 case TokenType.BOOL:
-                    ParseLiteral(node);
+                    ParseLiteral(node); // NonTerminal Rule: Literal
                     break;
                 case TokenType.IDENTIFIER:
-                    ParseVariable(node);
+                    ParseVariable(node); // NonTerminal Rule: Variable
                     break;
                 case TokenType.BROPEN:
 
-                    
-                    tok = scanner.Scan(TokenType.BROPEN);
+                     // Concat Rule
+                    tok = scanner.Scan(TokenType.BROPEN); // Terminal Rule: BROPEN
                     n = node.CreateNode(tok, tok.ToString() );
                     node.Token.UpdateRange(tok);
                     node.Nodes.Add(n);
@@ -1373,11 +1373,11 @@ namespace TinyPG
                         return;
                     }
 
-                    
-                    ParseExpr(node);
+                     // Concat Rule
+                    ParseExpr(node); // NonTerminal Rule: Expr
 
-                    
-                    tok = scanner.Scan(TokenType.BRCLOSE);
+                     // Concat Rule
+                    tok = scanner.Scan(TokenType.BRCLOSE); // Terminal Rule: BRCLOSE
                     n = node.CreateNode(tok, tok.ToString() );
                     node.Token.UpdateRange(tok);
                     node.Nodes.Add(n);
@@ -1389,10 +1389,10 @@ namespace TinyPG
                 default:
                     tree.Errors.Add(new ParseError("Unexpected token '" + tok.Text.Replace("\n", "") + "' found. Expected INTEGER, DOUBLE, STRING, BOOL, IDENTIFIER, or BROPEN.", 0x0002, tok));
                     break;
-            }
+            } // Choice Rule
 
             parent.Token.UpdateRange(node.Token);
-        }
+        } // NonTerminalSymbol: Atom
 
 
     }

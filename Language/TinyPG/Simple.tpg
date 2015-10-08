@@ -1,6 +1,8 @@
 // Simple.
 // Автор: Ильченко Егор.
 
+<% @TinyPG Language="C#" TemplatePath="..\Language\TinyPG\Templates\" %>
+
 // Терминалы.
 [IgnoreCase]GLOBAL -> @"global";
 [IgnoreCase]END  	-> @"end";
