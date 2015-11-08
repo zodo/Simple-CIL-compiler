@@ -1,12 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Language.Semantic.Data
+﻿namespace Language.Semantic.Data
 {
-    class Literal
+    using System;
+
+    public class Literal
     {
+        public Literal(LiteralType type, string value, string name)
+        {
+            Type = type;
+            Value = value;
+            Name = name;
+        }
+
+        public LiteralType Type { get; }
+
+        private string Value { get; set; }
+
+        public T GetValue<T>()
+        {
+            return (T)Convert.ChangeType(Value, typeof(T));
+        }
+
+        public string Name { get; set; }
     }
 }

@@ -41,6 +41,8 @@
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rUNToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.runToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.mISCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.identifierTableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerMain)).BeginInit();
             this.splitContainerMain.Panel1.SuspendLayout();
             this.splitContainerMain.Panel2.SuspendLayout();
@@ -127,7 +129,8 @@
             // 
             this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fILEToolStripMenuItem,
-            this.rUNToolStripMenuItem});
+            this.rUNToolStripMenuItem,
+            this.mISCToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
             this.menuStrip.Size = new System.Drawing.Size(702, 24);
@@ -185,6 +188,21 @@
             this.runToolStripMenuItem1.Text = "Run";
             this.runToolStripMenuItem1.Click += new System.EventHandler(this.runToolStripMenuItem1_Click);
             // 
+            // mISCToolStripMenuItem
+            // 
+            this.mISCToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.identifierTableToolStripMenuItem});
+            this.mISCToolStripMenuItem.Name = "mISCToolStripMenuItem";
+            this.mISCToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
+            this.mISCToolStripMenuItem.Text = "MISC";
+            // 
+            // identifierTableToolStripMenuItem
+            // 
+            this.identifierTableToolStripMenuItem.Name = "identifierTableToolStripMenuItem";
+            this.identifierTableToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.identifierTableToolStripMenuItem.Text = "Identifier table";
+            this.identifierTableToolStripMenuItem.Click += new System.EventHandler(this.identifierTableToolStripMenuItem_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -225,6 +243,8 @@
         private System.Windows.Forms.ToolStripMenuItem rUNToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem runToolStripMenuItem1;
         private System.Windows.Forms.RichTextBox textBoxProgram;
+        private System.Windows.Forms.ToolStripMenuItem mISCToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem identifierTableToolStripMenuItem;
     }
 }
 

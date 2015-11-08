@@ -1,12 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Language.Semantic.Data
+﻿namespace Language.Semantic.Data
 {
-    class LiteralType
+    public enum LiteralType
     {
+        Integer,
+        Double,
+        String,
+        Bool,
+        Function,
+        Unknown
     }
 }

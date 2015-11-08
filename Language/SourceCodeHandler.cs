@@ -6,6 +6,7 @@
     using System.Windows.Forms;
 
     using Semantic;
+    using Semantic.Data;
 
     using TinyPG;
 
@@ -28,12 +29,20 @@
 
             var tree = parser.Parse(source.Text, "", new ParseTreeWithSemantic());
 
-            var res = tree.Eval().ToString();
-            MessageBox.Show(res);
+            if (!tree.Errors.Any())
+            {
+                var res = tree.Eval()?.ToString();
+                var r = IdentifierTable.RootNamespace;
+
+                
+            }
+            
 
             var node = (ParseNode)tree;
             //ToAST(ref node);
             AddToTree(tree.Nodes.First(), ParseTree);
+
+            AddToIdentifierTree(IdentifierTable.RootNamespace, IdentifierTree);
 
             Tokens.AddRange(
                 scanner.RecognizedTokens.Select(
@@ -55,6 +64,29 @@
         public TreeNode ParseTree { get; private set; } = new TreeNode();
 
         public string Status { get; private set; }
+
+        public TreeNode IdentifierTree { get; set; } = new TreeNode();
+
+        private void AddToIdentifierTree(Namespace namespc, TreeNode node)
+        {
+            var nodeText = namespc.Name;
+            var singleNode = new TreeNode(nodeText) { Tag = namespc };
+
+            foreach (var literal in namespc.Literals.Where(l => namespc.Children.All(c => c.Name != l.Name)))
+            {
+                var literalNode = new TreeNode(literal.Name);
+                singleNode.Nodes.Add(literalNode);
+            }
+
+            
+            node.Nodes.Add(singleNode);
+
+            foreach (var child in namespc.Children)
+            {
+                AddToIdentifierTree(child, singleNode);
+            }
+            
+        }
 
         private void AddToTree(ParseNode node, TreeNode treeNode)
         {

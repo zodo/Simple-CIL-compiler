@@ -9,7 +9,7 @@ namespace Language
 
     public partial class MainForm : Form
     {
-        private bool _newline;
+        private SourceCodeHandler handler;
         public MainForm()
         {
             InitializeComponent();
@@ -18,7 +18,7 @@ namespace Language
 
         private void runToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            var handler = new SourceCodeHandler(textBoxProgram);
+            handler = new SourceCodeHandler(textBoxProgram);
             parseTreeView.Nodes.Clear();
             parseTreeView.Nodes.Add(handler.ParseTree.FirstNode);
             textBoxStatus.Text = $"{handler.Status}{Environment.NewLine}{string.Join(Environment.NewLine, handler.Tokens)}";
@@ -42,6 +42,19 @@ namespace Language
                     textBoxProgram.AppendText(@"	");
                 }
 
+            }
+        }
+
+        private void identifierTableToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var identForm = new Form() {Width = 400, Height = 700, Text = @"Symbol table"};
+            var tree = new TreeView() { Dock = DockStyle.Fill };
+            tree.Nodes.Clear();
+            if (handler != null)
+            {
+                tree.Nodes.Add(handler.IdentifierTree.FirstNode);
+                identForm.Controls.Add(tree);
+                identForm.Show();
             }
         }
     }

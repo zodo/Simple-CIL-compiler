@@ -104,7 +104,10 @@ namespace <%Namespace%>
             Token.Type = TokenType.Start;
             Token.Text = "Root";
             Errors = new ParseErrors();
+            Instance = this;
         }
+
+        public static ParseTree Instance{get;set;}
         
         /// <summary>
         /// Get tree as formatted string.

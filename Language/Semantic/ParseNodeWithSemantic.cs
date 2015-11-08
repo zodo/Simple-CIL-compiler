@@ -1,11 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Language.Semantic
 {
+    using System.Linq.Expressions;
+
+    using Data;
+
     using TinyPG;
 
     class ParseNodeWithSemantic : ParseNode
@@ -22,11 +23,17 @@ namespace Language.Semantic
             return node;
         }
 
+        private ParseNode GetNode(TokenType type)
+        {
+            return nodes.OfTokenType(type).FirstOrDefault();
+        }
+
         /// <summary>
         /// Rule: Start -> (Program)? EOF ;
         /// </summary>
         protected override object EvalStart(ParseTree tree, params object[] paramlist)
         {
+            IdentifierTable.Reset();
             var program = nodes.FirstOrDefault(n => n.Token.Type == TokenType.Program);
             if (program != null)
             {
@@ -40,7 +47,12 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalProgram(ParseTree tree, params object[] paramlist)
         {
-            return nodes.Where(n => n.Token.Type == TokenType.Member).Aggregate("", (current, member) => current + (member.Eval(tree).ToString() + "\r\n"));
+            foreach (var parseNode in nodes.OfTokenType(TokenType.Member))
+            {
+                IdentifierTable.CurrentNamespace = IdentifierTable.RootNamespace;
+                parseNode.Eval(tree);
+            }
+            return null;
         }
 
         /// <summary>
@@ -48,7 +60,11 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalMember(ParseTree tree, params object[] paramlist)
         {
-            return nodes.First().Eval(tree);
+            foreach (var parseNode in nodes)
+            {
+                parseNode.Eval(tree);
+            }
+            return null;
         }
 
         /// <summary>
@@ -56,7 +72,20 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalGlobalvar(ParseTree tree, params object[] paramlist)
         {
-            return base.EvalGlobalvar(tree, paramlist);
+            var globVarName = GetNode(TokenType.IDENTIFIER).Token.Text;
+           
+            var literalNode = GetNode(TokenType.Literal);
+            if (literalNode != null)
+            {
+                var literal = (Literal)literalNode.Eval(tree);
+                literal.Name = globVarName;
+                IdentifierTable.CurrentNamespace.AddLiteral(literal, this);
+            }
+            else
+            {
+                IdentifierTable.CurrentNamespace.AddLiteral(new Literal(LiteralType.Unknown, "", globVarName), this);
+            }
+            return null;
         }
 
         /// <summary>
@@ -64,12 +93,21 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalFunction(ParseTree tree, params object[] paramlist)
         {
-            var expr = nodes.SingleOrDefault(n => n.Token.Type == TokenType.Expr);
-            if (expr != null)
-            {
-                return expr.Eval(tree);
-            }
-            else return "not supported";
+            var funcName = GetNode(TokenType.IDENTIFIER).Token.Text;
+            
+            IdentifierTable.CurrentNamespace.AddLiteral(new Literal(LiteralType.Function, "", funcName), this);
+
+            IdentifierTable.ChangeNamespace(new Namespace(funcName));
+
+            GetNode(TokenType.Parameters).Eval(tree);
+
+            var exprNode = GetNode(TokenType.Expr);
+            exprNode?.Eval(tree);
+
+            var stateNode = GetNode(TokenType.Statements);
+            stateNode?.Eval(tree);
+
+            return null;
         }
 
         /// <summary>
@@ -77,7 +115,12 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalParameters(ParseTree tree, params object[] paramlist)
         {
-            return base.EvalParameters(tree, paramlist);
+            foreach (var identNode in nodes.OfTokenType(TokenType.IDENTIFIER))
+            {
+                var identName = identNode.Token.Text;
+                IdentifierTable.CurrentNamespace.AddLiteral(new Literal(LiteralType.Unknown, "", identName), this);
+            }
+            return null;
         }
 
         /// <summary>
@@ -197,7 +240,31 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalLiteral(ParseTree tree, params object[] paramlist)
         {
-            return Convert.ToInt32(nodes[0].Token.Text);
+            // Определить тип, вернуть экземпляр Literal
+            var nodei = GetNode(TokenType.INTEGER);
+            if (nodei != null)
+            {
+                return new Literal(LiteralType.Integer, nodei.Token.Text, "");
+            }
+
+            var noded = GetNode(TokenType.DOUBLE);
+            if (noded != null)
+            {
+                return new Literal(LiteralType.Double, noded.Token.Text, "");
+            }
+
+            var nodestr = GetNode(TokenType.STRING);
+            if (nodestr != null)
+            {
+                return new Literal(LiteralType.String, nodestr.Token.Text, "");
+            }
+
+            var nodeb = GetNode(TokenType.BOOL);
+            if (nodeb != null)
+            {
+                return new Literal(LiteralType.Bool, nodeb.Token.Text, "");
+            }
+            return null;
         }
 
         /// <summary>
@@ -205,7 +272,7 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalExpr(ParseTree tree, params object[] paramlist)
         {
-            return nodes.First().Eval(tree);
+            return null;
         }
 
         /// <summary>
@@ -213,7 +280,7 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalOrExpr(ParseTree tree, params object[] paramlist)
         {
-            return nodes.First().Eval(tree);
+            return null;
         }
 
         /// <summary>
@@ -221,7 +288,7 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalAndExpr(ParseTree tree, params object[] paramlist)
         {
-            return nodes.First().Eval(tree);
+            return null;
         }
 
         /// <summary>
@@ -229,7 +296,7 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalNotExpr(ParseTree tree, params object[] paramlist)
         {
-            return nodes.First().Eval(tree);
+            return null; 
         }
 
         /// <summary>
@@ -237,7 +304,7 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalCompExpr(ParseTree tree, params object[] paramlist)
         {
-            return nodes.First().Eval(tree);
+            return null;
         }
 
         /// <summary>
