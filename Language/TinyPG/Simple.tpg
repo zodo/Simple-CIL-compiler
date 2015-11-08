@@ -2,12 +2,14 @@
 // Автор: Ильченко Егор.
 
 <% @TinyPG Language="C#" TemplatePath="..\Language\TinyPG\Templates\" %>
+<% @TextHighlighter Generate="True" %>
+
 
 // Терминалы.
-[IgnoreCase]GLOBAL -> @"global";
-[IgnoreCase]END  	-> @"end";
-[IgnoreCase]RETURN	-> @"return";
-ARROW  -> @"=>";
+[Color(0, 0, 255)][IgnoreCase]GLOBAL -> @"global";
+[Color(0, 0, 255)][IgnoreCase]END  	-> @"end";
+[Color(0, 0, 255)][IgnoreCase]RETURN	-> @"return";
+[Color(0, 0, 255)] ARROW  -> @"=>";
 
 [IgnoreCase]IF	-> @"if";
 [IgnoreCase]ELSE	-> @"else";
@@ -22,17 +24,11 @@ ARROW  -> @"=>";
 [IgnoreCase]NOT	-> @"not"; 
 [IgnoreCase]OPER	-> @"in|out";
 
-PLUS	-> @"\+";
-MINUS	-> @"-";
-MULT	-> @"\*";
-DIV	-> @"/";
+PLUSMINUS-> @"\+|-";
+MULTDIV	-> @"\*|/|\%|//";
 COMP	-> @"=|\!=|\<\=|\<|\>=|\>";
-MOD	-> @"\%";
-INTDIV	-> @"//";
 POW	-> @"\^";
-
-INC 	-> @"\+\+";
-DEC 	-> @"--";
+UNARYOP -> @"\+\+|--|\+|-";
 
 COLON	-> @":";
 QUESTION -> @"\?";
@@ -86,6 +82,7 @@ Array		-> SQOPEN Expr SQCLOSE;
 Call		-> BROPEN Arguments? BRCLOSE;
 Arguments	-> Expr (COMMA Expr)*;
 Literal	-> INTEGER | DOUBLE | STRING | BOOL;
+
  
 // Выражения.
 Expr		-> OrExpr (QUESTION Expr COLON Expr)?;
@@ -93,8 +90,8 @@ OrExpr 	-> AndExpr (OR AndExpr)*;
 AndExpr	-> NotExpr (AND NotExpr)*;
 NotExpr 	-> NOT? CompExpr;
 CompExpr 	-> AddExpr (COMP AddExpr)?;
-AddExpr 	-> MultExpr ((PLUS | MINUS) MultExpr)*;
-MultExpr 	-> PowExpr ((MULT | DIV | MOD | INTDIV) PowExpr)*;
+AddExpr 	-> MultExpr ((PLUSMINUS) MultExpr)*; 
+MultExpr 	-> PowExpr ((MULTDIV) PowExpr)*;
 PowExpr  	-> UnaryExpr (POW UnaryExpr)*;
-UnaryExpr 	-> (MINUS | PLUS | INC | DEC)? Atom;
+UnaryExpr 	-> UNARYOP? Atom;
 Atom		-> Literal | Variable | BROPEN Expr BRCLOSE;

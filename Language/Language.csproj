@@ -46,6 +46,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Helpers.cs" />
+    <Compile Include="Semantic\ParseNodeWithSemantic.cs" />
+    <Compile Include="Semantic\ParseTreeWithSemantic.cs" />
     <Compile Include="SourceCodeHandler.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
@@ -58,6 +61,7 @@
     <Compile Include="TinyPG\Parser.cs" />
     <Compile Include="TinyPG\ParseTree.cs" />
     <Compile Include="TinyPG\Scanner.cs" />
+    <Compile Include="TinyPG\TextHighlighter.cs" />
     <Content Include="TinyPG\Templates\Parser.cs" />
     <Content Include="TinyPG\Templates\ParseTree.cs" />
     <Content Include="TinyPG\Templates\Scanner.cs" />

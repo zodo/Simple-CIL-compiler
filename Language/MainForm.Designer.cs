@@ -30,7 +30,7 @@
         {
             this.splitContainerMain = new System.Windows.Forms.SplitContainer();
             this.splitContainerLeft = new System.Windows.Forms.SplitContainer();
-            this.textBoxProgram = new System.Windows.Forms.TextBox();
+            this.textBoxProgram = new System.Windows.Forms.RichTextBox();
             this.textBoxStatus = new System.Windows.Forms.TextBox();
             this.parseTreeView = new System.Windows.Forms.TreeView();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
@@ -91,14 +91,16 @@
             // 
             // textBoxProgram
             // 
+            this.textBoxProgram.AcceptsTab = true;
             this.textBoxProgram.Dock = System.Windows.Forms.DockStyle.Fill;
             this.textBoxProgram.HideSelection = false;
             this.textBoxProgram.Location = new System.Drawing.Point(0, 0);
-            this.textBoxProgram.Multiline = true;
             this.textBoxProgram.Name = "textBoxProgram";
-            this.textBoxProgram.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.textBoxProgram.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
             this.textBoxProgram.Size = new System.Drawing.Size(373, 355);
             this.textBoxProgram.TabIndex = 0;
+            this.textBoxProgram.Text = "";
+            this.textBoxProgram.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.textBoxProgram_PreviewKeyDown);
             // 
             // textBoxStatus
             // 
@@ -197,7 +199,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerMain)).EndInit();
             this.splitContainerMain.ResumeLayout(false);
             this.splitContainerLeft.Panel1.ResumeLayout(false);
-            this.splitContainerLeft.Panel1.PerformLayout();
             this.splitContainerLeft.Panel2.ResumeLayout(false);
             this.splitContainerLeft.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerLeft)).EndInit();
@@ -213,7 +214,6 @@
 
         private System.Windows.Forms.SplitContainer splitContainerMain;
         private System.Windows.Forms.SplitContainer splitContainerLeft;
-        private System.Windows.Forms.TextBox textBoxProgram;
         private System.Windows.Forms.TextBox textBoxStatus;
         private System.Windows.Forms.TreeView parseTreeView;
         private System.Windows.Forms.MenuStrip menuStrip;
@@ -224,6 +224,7 @@
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem rUNToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem runToolStripMenuItem1;
+        private System.Windows.Forms.RichTextBox textBoxProgram;
     }
 }
 

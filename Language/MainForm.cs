@@ -3,18 +3,22 @@ using System.Windows.Forms;
 
 namespace Language
 {
+    using System.Linq;
+
     using TinyPG;
 
     public partial class MainForm : Form
     {
+        private bool _newline;
         public MainForm()
         {
             InitializeComponent();
+            textBoxProgram.SelectionTabs = new int[] { 20, 40, 60, 80 };
         }
 
         private void runToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            var handler = new SourceCodeHandler(textBoxProgram.Text);
+            var handler = new SourceCodeHandler(textBoxProgram);
             parseTreeView.Nodes.Clear();
             parseTreeView.Nodes.Add(handler.ParseTree.FirstNode);
             textBoxStatus.Text = $"{handler.Status}{Environment.NewLine}{string.Join(Environment.NewLine, handler.Tokens)}";
@@ -26,6 +30,19 @@ namespace Language
             var token = node.Token;
             textBoxProgram.Select(token.StartPos, token.Length);
             textBoxProgram.ScrollToCaret();
+        }
+
+        private void textBoxProgram_PreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                var currentLine = textBoxProgram.Lines.Length;
+                if (textBoxProgram.Lines[currentLine - 1].StartsWith("\t"))
+                {
+                    textBoxProgram.AppendText(@"	");
+                }
+
+            }
         }
     }
 }

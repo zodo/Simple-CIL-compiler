@@ -11,7 +11,6 @@ namespace <%Namespace%>
     [Serializable]
     public class ParseErrors : <%ParseErrors%>
     {
-
     }
 
     [Serializable]
@@ -59,12 +58,6 @@ namespace <%Namespace%>
             this.col = col;
             this.pos = pos;
             this.length = length;
-        }
-
-        public override string ToString()
-        {
-            // ReSharper disable once UseStringInterpolation
-            return string.Format("({1}:{2}) {0}", Message, Line, Column);
         }
     }
 

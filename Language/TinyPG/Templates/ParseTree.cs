@@ -5,15 +5,24 @@ using System.Collections.Generic;
 using System.Text;
 using System.Xml.Serialization;
 
+
+
 namespace <%Namespace%>
 {
     #region ParseTree
+
+    /// <summary>
+    /// Errors list.
+    /// </summary>
     [Serializable]
     public class ParseErrors : <%ParseErrors%>
     {
 
     }
-
+    
+    /// <summary>
+    /// Parsing error.
+    /// </summary>
     [Serializable]
     public class ParseError<%ParseError%>
     {
@@ -26,11 +35,17 @@ namespace <%Namespace%>
         private int length;
 
         public string File { get { return file; } }
+
         public int Code { get { return code; } }
+
         public int Line { get { return line; } }
+
         public int Column { get { return col; } }
+
         public int Position { get { return pos; } }
+
         public int Length { get { return length; } }
+
         public string Message { get { return message; } }
 
         // just for the sake of serialization
@@ -68,12 +83,20 @@ namespace <%Namespace%>
         }
     }
 
-    // rootlevel of the node tree
+    /// <summary>
+    /// Parse tree root.
+    /// </summary>
     [Serializable]
     public partial class ParseTree : ParseNode<%IParseTree%>
     {
+        /// <summary>
+        /// Parse errors.
+        /// </summary>
         public ParseErrors Errors;
-
+        
+        /// <summary>
+        /// Skipped tokens.
+        /// </summary>
         public List<Token> Skipped;
 
         public ParseTree() : base(new Token(), "ParseTree")
@@ -82,7 +105,10 @@ namespace <%Namespace%>
             Token.Text = "Root";
             Errors = new ParseErrors();
         }
-
+        
+        /// <summary>
+        /// Get tree as formatted string.
+        /// </summary>
         public string PrintTree()
         {
             StringBuilder sb = new StringBuilder();
@@ -104,16 +130,19 @@ namespace <%Namespace%>
         }
         
         /// <summary>
-        /// this is the entry point for executing and evaluating the parse tree.
+        /// Entry point for tree eval.
         /// </summary>
-        /// <param name="paramlist">additional optional input parameters</param>
-        /// <returns>the output of the evaluation function</returns>
+        /// <param name="paramlist">Additional optional params.</param>
+        /// <returns>Eval result.</returns>
         public object Eval(params object[] paramlist)
         {
             return Nodes[0].Eval(this, paramlist);
         }
     }
 
+    /// <summary>
+    /// Parse node.
+    /// </summary>
     [Serializable]
     [XmlInclude(typeof(ParseTree))]
     public partial class ParseNode<%IParseNode%>
@@ -121,14 +150,30 @@ namespace <%Namespace%>
         protected string text;
         protected List<ParseNode> nodes;
         <%ITokenGet%>
-        public List<ParseNode> Nodes { get {return nodes;} }
+        
+        /// <summary>
+        /// Child elements.
+        /// </summary>
+        public List<ParseNode> Nodes { get {return nodes;} set{nodes = value;} }
         <%INodesGet%>
+
+        /// <summary>
+        /// Parent element.
+        /// </summary>
         [XmlIgnore] // avoid circular references when serializing
         public ParseNode Parent;
+        
+        /// <summary>
+        /// Token.
+        /// </summary>
         public Token Token; // the token/rule
-
-        [XmlIgnore] // skip redundant text (is part of Token)
-        public string Text { // text to display in parse tree 
+        
+        /// <summary>
+        /// Displaying text.
+        /// </summary>
+        [XmlIgnore]
+        public string Text
+        {
             get { return text;} 
             set { text = value; }
         } 

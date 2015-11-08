@@ -4,6 +4,9 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Windows.Forms;
+
+    using Semantic;
+
     using TinyPG;
 
     public class SourceCodeHandler
@@ -15,13 +18,21 @@
             TokenType.IDENTIFIER, TokenType.OPER
         };
 
-        public SourceCodeHandler(string source)
+        public SourceCodeHandler(RichTextBox source)
         {
-            _source = source;
+            _source = source.Text;
             var scanner = new Scanner();
             var parser = new Parser(scanner);
 
-            var tree = parser.Parse(source);
+            //var highlighter = new TextHighlighter(source, scanner, parser);
+
+            var tree = parser.Parse(source.Text, "", new ParseTreeWithSemantic());
+
+            var res = tree.Eval().ToString();
+            MessageBox.Show(res);
+
+            var node = (ParseNode)tree;
+            //ToAST(ref node);
             AddToTree(tree.Nodes.First(), ParseTree);
 
             Tokens.AddRange(
@@ -57,6 +68,23 @@
             foreach (var parseNode in node.Nodes)
             {
                 AddToTree(parseNode, singleNode);
+            }
+        }
+
+        private void ToAST(ref ParseNode tree)
+        {
+            if (tree.Nodes.Count > 1)
+            {
+                for (var i = 0; i < tree.Nodes.Count; i++)
+                {
+                    var parseNode = tree.Nodes[i];
+                    ToAST(ref parseNode);
+                }
+            }
+            else if (tree.Nodes.Count == 1)
+            {
+                tree.Nodes = tree.Nodes.First().Nodes;
+                ToAST(ref tree);
             }
         }
     }
