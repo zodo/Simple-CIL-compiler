@@ -97,15 +97,17 @@ namespace Language.Semantic
             
             IdentifierTable.CurrentNamespace.AddLiteral(new Literal(LiteralType.Function, "", funcName), this);
 
-            IdentifierTable.ChangeNamespace(new Namespace(funcName));
+            IdentifierTable.Down(new Namespace(funcName));
 
-            GetNode(TokenType.Parameters).Eval(tree);
+            GetNode(TokenType.Parameters)?.Eval(tree);
 
             var exprNode = GetNode(TokenType.Expr);
             exprNode?.Eval(tree);
 
             var stateNode = GetNode(TokenType.Statements);
             stateNode?.Eval(tree);
+
+            IdentifierTable.Up();
 
             return null;
         }
@@ -128,7 +130,13 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalStatements(ParseTree tree, params object[] paramlist)
         {
-            return base.EvalStatements(tree, paramlist);
+            IdentifierTable.Down(new Namespace(Guid.NewGuid().ToString()));
+            foreach (var parseNode in nodes.OfTokenType(TokenType.Statement))
+            {
+                parseNode.Eval(tree);
+            }
+            IdentifierTable.Up();
+            return null;
         }
 
         /// <summary>
@@ -136,7 +144,8 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalStatement(ParseTree tree, params object[] paramlist)
         {
-            return base.EvalStatement(tree, paramlist);
+            nodes.FirstOrDefault()?.Eval(tree);
+            return null;
         }
 
         /// <summary>
@@ -144,6 +153,7 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalIfStm(ParseTree tree, params object[] paramlist)
         {
+            
             return base.EvalIfStm(tree, paramlist);
         }
 
@@ -192,7 +202,8 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalCallOrAssign(ParseTree tree, params object[] paramlist)
         {
-            return base.EvalCallOrAssign(tree, paramlist);
+            GetNode(TokenType.Variable)?.Eval(tree);
+            return null;
         }
 
         /// <summary>
@@ -208,6 +219,7 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalVariable(ParseTree tree, params object[] paramlist)
         {
+            IdentifierTable.CurrentNamespace.AddLiteral(new Literal(LiteralType.Unknown, "", GetNode(TokenType.IDENTIFIER).Token.Text), this);
             return base.EvalVariable(tree, paramlist);
         }
 

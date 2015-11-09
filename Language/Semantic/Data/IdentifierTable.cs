@@ -8,10 +8,15 @@
 
         public static Namespace CurrentNamespace { get; set; }
 
-        public static void ChangeNamespace(Namespace newnamespace)
+        public static void Down(Namespace newnamespace)
         {
             newnamespace.Owner = CurrentNamespace;
             CurrentNamespace = newnamespace;
+        }
+
+        public static void Up()
+        {
+            CurrentNamespace = CurrentNamespace.Owner;
         }
 
         public static void Reset()
