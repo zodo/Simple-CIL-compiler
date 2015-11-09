@@ -8,17 +8,19 @@
 
     public class Namespace
     {
-        private readonly List<Literal> _literals = new List<Literal>();
+        private readonly List<Symbol> _symbols = new List<Symbol>();
 
         private Namespace _owner;
 
         public Namespace(string name)
         {
             Name = name;
-            Guid = Guid.NewGuid();
         }
 
-        public Guid Guid { get; }
+        public Namespace()
+        {
+            Name = Guid.NewGuid().ToString();
+        }
 
         public string Name { get; }
 
@@ -38,18 +40,18 @@
 
         public List<Namespace> Children { get; } = new List<Namespace>();
 
-        //public IReadOnlyCollection<Literal> Literals => Owner?.Literals.Concat(_literals).ToList() ?? _literals;
-        public IReadOnlyCollection<Literal> Literals => _literals;
+        public IReadOnlyCollection<Symbol> Symbols => Owner?.Symbols.Concat(_symbols).ToList() ?? _symbols;
+        //public IReadOnlyCollection<Symbol> Symbols => _symbols;
 
 
-        public void AddLiteral(Literal literal, ParseNode node)
+        public void AddSymbol(Symbol symbol, ParseNode node)
         {
-            var existedLiterals = Literals.Where(l => l.Name == literal.Name);
-            if (existedLiterals.Any())
+            var existedSymbols = Symbols.Where(l => l.Name == symbol.Name);
+            if (existedSymbols.Any())
             {
-                ParseTree.Instance.Errors.Add(new ParseError($"Переменная {literal.Name} уже используется", 0x007, node));
+                ParseTree.Instance.Errors.Add(new ParseError($"Переменная {symbol.Name} уже используется", 0x007, node));
             }
-            _literals.Add(literal);
+            _symbols.Add(symbol);
         }
     }
 }

@@ -2,16 +2,16 @@
 {
     using System;
 
-    public class Literal
+    public class Symbol
     {
-        public Literal(LiteralType type, string value, string name)
+        public Symbol(SymbolType type, string value, string name)
         {
             Type = type;
             Value = value;
             Name = name;
         }
 
-        public LiteralType Type { get; }
+        public SymbolType Type { get; }
 
         private string Value { get; set; }
 

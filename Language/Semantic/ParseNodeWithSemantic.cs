@@ -3,6 +3,7 @@ using System.Linq;
 
 namespace Language.Semantic
 {
+    using System.Collections.Generic;
     using System.Linq.Expressions;
 
     using Data;
@@ -33,13 +34,12 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalStart(ParseTree tree, params object[] paramlist)
         {
-            IdentifierTable.Reset();
-            var program = nodes.FirstOrDefault(n => n.Token.Type == TokenType.Program);
-            if (program != null)
-            {
-                return program.Eval(tree);
-            }
-            return "Nothing found";
+            Namespaces.Reset();
+
+            var program = GetNode(TokenType.Program);
+            program?.Eval(tree);
+
+            return null;
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace Language.Semantic
         {
             foreach (var parseNode in nodes.OfTokenType(TokenType.Member))
             {
-                IdentifierTable.CurrentNamespace = IdentifierTable.RootNamespace;
+                Namespaces.Current = Namespaces.Root;
                 parseNode.Eval(tree);
             }
             return null;
@@ -60,30 +60,29 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalMember(ParseTree tree, params object[] paramlist)
         {
-            foreach (var parseNode in nodes)
-            {
-                parseNode.Eval(tree);
-            }
+            nodes.First().Eval(tree);
+
             return null;
         }
 
         /// <summary>
-        /// Rule: Globalvar -> GLOBAL IDENTIFIER (ASSIGN Literal )? ;
+        /// Rule: Globalvar -> GLOBAL IDENTIFIER (ASSIGN Symbol )? ;
         /// </summary>
         protected override object EvalGlobalvar(ParseTree tree, params object[] paramlist)
         {
-            var globVarName = GetNode(TokenType.IDENTIFIER).Token.Text;
+            var identNode = GetNode(TokenType.IDENTIFIER);
+            var varName = identNode.Token.Text;
            
             var literalNode = GetNode(TokenType.Literal);
             if (literalNode != null)
             {
-                var literal = (Literal)literalNode.Eval(tree);
-                literal.Name = globVarName;
-                IdentifierTable.CurrentNamespace.AddLiteral(literal, this);
+                var literal = (Symbol)literalNode.Eval(tree);
+                literal.Name = varName;
+                Namespaces.Current.AddSymbol(literal, identNode);
             }
             else
             {
-                IdentifierTable.CurrentNamespace.AddLiteral(new Literal(LiteralType.Unknown, "", globVarName), this);
+                Namespaces.Current.AddSymbol(new Symbol(SymbolType.Unknown, "", varName), identNode);
             }
             return null;
         }
@@ -95,19 +94,17 @@ namespace Language.Semantic
         {
             var funcName = GetNode(TokenType.IDENTIFIER).Token.Text;
             
-            IdentifierTable.CurrentNamespace.AddLiteral(new Literal(LiteralType.Function, "", funcName), this);
+            Namespaces.Current.AddSymbol(new Symbol(SymbolType.Function, "", funcName), GetNode(TokenType.IDENTIFIER));
 
-            IdentifierTable.Down(new Namespace(funcName));
+            Namespaces.LevelDown(new Namespace(funcName));
 
             GetNode(TokenType.Parameters)?.Eval(tree);
 
-            var exprNode = GetNode(TokenType.Expr);
-            exprNode?.Eval(tree);
+            GetNode(TokenType.Expr)?.Eval(tree);
+            
+            GetNode(TokenType.Statements)?.Eval(tree);
 
-            var stateNode = GetNode(TokenType.Statements);
-            stateNode?.Eval(tree);
-
-            IdentifierTable.Up();
+            Namespaces.LevelUp();
 
             return null;
         }
@@ -120,7 +117,7 @@ namespace Language.Semantic
             foreach (var identNode in nodes.OfTokenType(TokenType.IDENTIFIER))
             {
                 var identName = identNode.Token.Text;
-                IdentifierTable.CurrentNamespace.AddLiteral(new Literal(LiteralType.Unknown, "", identName), this);
+                Namespaces.Current.AddSymbol(new Symbol(SymbolType.Unknown, "", identName), identNode);
             }
             return null;
         }
@@ -130,12 +127,12 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalStatements(ParseTree tree, params object[] paramlist)
         {
-            IdentifierTable.Down(new Namespace(Guid.NewGuid().ToString()));
+            Namespaces.LevelDown(new Namespace());
             foreach (var parseNode in nodes.OfTokenType(TokenType.Statement))
             {
                 parseNode.Eval(tree);
             }
-            IdentifierTable.Up();
+            Namespaces.LevelUp();
             return null;
         }
 
@@ -153,7 +150,6 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalIfStm(ParseTree tree, params object[] paramlist)
         {
-            
             return base.EvalIfStm(tree, paramlist);
         }
 
@@ -202,7 +198,19 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalCallOrAssign(ParseTree tree, params object[] paramlist)
         {
-            GetNode(TokenType.Variable)?.Eval(tree);
+            var assignNode = GetNode(TokenType.Assign);
+            var stype = assignNode?.Eval(tree) ?? SymbolType.Unknown;
+
+            var isFunc = ((int)GetNode(TokenType.Variable).Eval(tree, stype)) == 1;
+
+            
+
+            if (isFunc && assignNode != null)
+            {
+                ParseTree.Instance.Errors.Add(new ParseError("Попытка присвоить значение вызову функции", 0x009, assignNode));
+            }
+            
+
             return null;
         }
 
@@ -211,7 +219,7 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalAssign(ParseTree tree, params object[] paramlist)
         {
-            return base.EvalAssign(tree, paramlist);
+            return GetNode(TokenType.Expr).Eval(tree);
         }
 
         /// <summary>
@@ -219,8 +227,23 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalVariable(ParseTree tree, params object[] paramlist)
         {
-            IdentifierTable.CurrentNamespace.AddLiteral(new Literal(LiteralType.Unknown, "", GetNode(TokenType.IDENTIFIER).Token.Text), this);
-            return base.EvalVariable(tree, paramlist);
+            var identNode = GetNode(TokenType.IDENTIFIER);
+            if (GetNode(TokenType.Call) != null)
+            {
+                if (Namespaces.Current.Symbols.Any(s => s.Type == SymbolType.Function && s.Name == identNode.Token.Text))
+                {
+                    return 1;
+                }
+                ParseTree.Instance.Errors.Add(new ParseError($"Попытка вызова {identNode.Token.Text}, функция не объявлена", 0x008, identNode));
+                return 1;
+
+            }
+            else
+            {
+                Namespaces.Current.AddSymbol(new Symbol((SymbolType)paramlist[0], "", identNode.Token.Text), identNode);
+                return 0;
+            }
+            
         }
 
         /// <summary>
@@ -252,29 +275,29 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalLiteral(ParseTree tree, params object[] paramlist)
         {
-            // Определить тип, вернуть экземпляр Literal
+            // Определить тип, вернуть экземпляр Symbol
             var nodei = GetNode(TokenType.INTEGER);
             if (nodei != null)
             {
-                return new Literal(LiteralType.Integer, nodei.Token.Text, "");
+                return new Symbol(SymbolType.Integer, nodei.Token.Text, "");
             }
 
             var noded = GetNode(TokenType.DOUBLE);
             if (noded != null)
             {
-                return new Literal(LiteralType.Double, noded.Token.Text, "");
+                return new Symbol(SymbolType.Double, noded.Token.Text, "");
             }
 
             var nodestr = GetNode(TokenType.STRING);
             if (nodestr != null)
             {
-                return new Literal(LiteralType.String, nodestr.Token.Text, "");
+                return new Symbol(SymbolType.String, nodestr.Token.Text, "");
             }
 
             var nodeb = GetNode(TokenType.BOOL);
             if (nodeb != null)
             {
-                return new Literal(LiteralType.Bool, nodeb.Token.Text, "");
+                return new Symbol(SymbolType.Bool, nodeb.Token.Text, "");
             }
             return null;
         }
@@ -284,7 +307,11 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalExpr(ParseTree tree, params object[] paramlist)
         {
-            return null;
+            if (GetNode(TokenType.QUESTION) == null)
+            {
+                return (SymbolType)GetNode(TokenType.OrExpr).Eval(tree);
+            }
+            return SymbolType.Unknown;
         }
 
         /// <summary>
@@ -292,7 +319,21 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalOrExpr(ParseTree tree, params object[] paramlist)
         {
-            return null;
+            if (GetNode(TokenType.OR) == null)
+            {
+                return (SymbolType)GetNode(TokenType.AndExpr).Eval(tree);
+            }
+
+            foreach (var parseNode in nodes.OfTokenType(TokenType.AndExpr))
+            {
+                var type = ((SymbolType)parseNode.Eval(tree));
+                if (type != SymbolType.Bool && type != SymbolType.Unknown)
+                {
+                    ParseTree.Instance.Errors.Add(new ParseError("Попытка илить неслагаемое", 0, parseNode));
+                }
+            }
+
+            return SymbolType.Bool;
         }
 
         /// <summary>
@@ -300,7 +341,22 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalAndExpr(ParseTree tree, params object[] paramlist)
         {
-            return null;
+            if (GetNode(TokenType.AND) == null)
+            {
+                return (SymbolType)GetNode(TokenType.NotExpr).Eval(tree);
+            }
+
+            var types = new List<SymbolType>();
+            foreach (var parseNode in nodes.OfTokenType(TokenType.NotExpr))
+            {
+                var type = ((SymbolType)parseNode.Eval(tree));
+                if (type != SymbolType.Bool && type != SymbolType.Unknown)
+                {
+                    ParseTree.Instance.Errors.Add(new ParseError("Попытка слагать неслагаемое", 0, parseNode));
+                }
+            }
+
+            return GetExprType(types);
         }
 
         /// <summary>
@@ -308,7 +364,16 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalNotExpr(ParseTree tree, params object[] paramlist)
         {
-            return null; 
+            var evalNotExpr = (SymbolType)GetNode(TokenType.CompExpr).Eval(tree);
+            if (GetNode(TokenType.NOT) == null)
+            {
+                return evalNotExpr;
+            }
+            if (evalNotExpr != SymbolType.Bool && evalNotExpr != SymbolType.Unknown)
+            {
+                ParseTree.Instance.Errors.Add(new ParseError("Попытка отрицать неотрицаемое", 0, GetNode(TokenType.NOT)));
+            }
+            return SymbolType.Bool;
         }
 
         /// <summary>
@@ -316,7 +381,12 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalCompExpr(ParseTree tree, params object[] paramlist)
         {
-            return null;
+            if (GetNode(TokenType.COMP) == null)
+            {
+                return (SymbolType)GetNode(TokenType.AddExpr).Eval(tree);
+            }
+
+            return SymbolType.Bool;
         }
 
         /// <summary>
@@ -324,19 +394,14 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalAddExpr(ParseTree tree, params object[] paramlist)
         {
-            var result = Convert.ToInt32(nodes[0].Eval(tree));
-            for (var i = 1; i < nodes.Count; i += 2)
+            if (GetNode(TokenType.PLUSMINUS) == null)
             {
-                if (nodes[i].Token.Text == "+")
-                {
-                    result += Convert.ToInt32(nodes[i + 1].Eval(tree));
-                }
-                else
-                {
-                    result -= Convert.ToInt32(nodes[i + 1].Eval(tree));
-                }
+                return (SymbolType)GetNode(TokenType.MultExpr).Eval(tree);
             }
-            return result;
+
+            var types = nodes.OfTokenType(TokenType.MultExpr).Select(parseNode => (SymbolType)parseNode.Eval(tree)).ToList();
+
+            return GetExprType(types);
         }
 
         /// <summary>
@@ -344,32 +409,52 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalMultExpr(ParseTree tree, params object[] paramlist)
         {
-            var result = Convert.ToInt32(nodes[0].Eval(tree));
-            for (var i = 1; i < nodes.Count; i += 2)
+            if (GetNode(TokenType.MULTDIV) == null)
             {
-                if (nodes[i].Token.Text == "*")
+                return (SymbolType)GetNode(TokenType.PowExpr).Eval(tree);
+            }
+            
+            var types = new List<SymbolType>();
+            foreach (var parseNode in nodes.OfTokenType(TokenType.PowExpr))
+            {
+                var powType = (SymbolType)parseNode.Eval(tree);
+
+                types.Add(powType);
+
+                if (powType == SymbolType.String && parseNode != nodes.OfTokenType(TokenType.PowExpr).First())
                 {
-                    result *= Convert.ToInt32(nodes[i + 1].Eval(tree));
-                }
-                else
-                {
-                    result /= Convert.ToInt32(nodes[i + 1].Eval(tree));
+                    ParseTree.Instance.Errors.Add(new ParseError("Невозможно умножить или поделить на строку", 0, parseNode));
                 }
             }
-            return result;
+
+            return GetExprType(types);
         }
+
+       
 
         /// <summary>
         /// Rule: PowExpr -> UnaryExpr (POW UnaryExpr )* ;
         /// </summary>
         protected override object EvalPowExpr(ParseTree tree, params object[] paramlist)
         {
-            var result = Convert.ToInt32(nodes[0].Eval(tree));
-            for (var i = 1; i < nodes.Count; i += 2)
+            if (GetNode(TokenType.POW) == null)
             {
-                result = (int)Math.Pow(result, Convert.ToInt32(nodes[i + 1].Eval(tree)));
+                return (SymbolType)GetNode(TokenType.UnaryExpr).Eval(tree);
             }
-            return result;
+            var types = new List<SymbolType>();
+            foreach (var parseNode in nodes.OfTokenType(TokenType.UnaryExpr))
+            {
+                var unaryType = (SymbolType)parseNode.Eval(tree);
+
+                types.Add(unaryType);
+
+                if (unaryType == SymbolType.String)
+                {
+                    ParseTree.Instance.Errors.Add(new ParseError("Невозможно применить операцию возведения в степень к строке", 0, parseNode));
+                }
+            }
+
+            return GetExprType(types);
         }
 
         /// <summary>
@@ -377,18 +462,16 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalUnaryExpr(ParseTree tree, params object[] paramlist)
         {
-            var str = nodes.Single(n => n.Token.Type == TokenType.Atom).Eval(tree);
-            var result = Convert.ToInt32(str);
-            var unaryop = nodes.FirstOrDefault(n => n.Token.Type == TokenType.UNARYOP);
-            if (unaryop == null)
+            var atomType = (SymbolType)GetNode(TokenType.Atom).Eval(tree);
+
+            var unaryNode = GetNode(TokenType.UNARYOP);
+
+            if (atomType == SymbolType.String && unaryNode != null)
             {
-                return result;
+                ParseTree.Instance.Errors.Add(new ParseError($"Невозможно применить унарную операцию к строке", 0, unaryNode));
             }
-            if (unaryop.Token.Text == "-")
-            {
-                result = -result;
-            }
-            return result;
+
+            return atomType;
         }
 
         /// <summary>
@@ -396,7 +479,49 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalAtom(ParseTree tree, params object[] paramlist)
         {
-            return nodes.Count == 1 ?nodes[0].Eval(tree): nodes[1].Eval(tree);
+            var literalNode = GetNode(TokenType.Literal);
+            if (literalNode != null)
+            {
+                return ((Symbol)literalNode.Eval(tree)).Type;
+            }
+
+            var variableNode = GetNode(TokenType.Variable);
+            if (variableNode != null)
+            {
+                return SymbolType.Unknown;
+            }
+
+            var exprNode = GetNode(TokenType.Expr);
+            if (exprNode != null)
+            {
+                return ((Symbol)exprNode.Eval(tree)).Type;
+            }
+            return SymbolType.Unknown;
+        }
+
+        private static object GetExprType(List<SymbolType> types)
+        {
+            if (types.Contains(SymbolType.Unknown))
+            {
+                return SymbolType.Unknown;
+            }
+
+            if (types.Contains(SymbolType.String))
+            {
+                return SymbolType.String;
+            }
+
+            if (types.Contains(SymbolType.Double))
+            {
+                return SymbolType.Double;
+            }
+
+            if (types.Contains(SymbolType.Integer))
+            {
+                return SymbolType.Integer;
+            }
+
+            return SymbolType.Bool;
         }
     }
 }

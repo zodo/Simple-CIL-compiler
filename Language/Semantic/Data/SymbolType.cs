@@ -1,6 +1,6 @@
 ﻿namespace Language.Semantic.Data
 {
-    public enum LiteralType
+    public enum SymbolType
     {
         Integer,
         Double,
