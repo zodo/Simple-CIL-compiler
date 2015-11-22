@@ -230,6 +230,9 @@ namespace <%Namespace%>
         internal object Eval(ParseTree tree, params object[] paramlist)
         {
             object Value = null;
+            
+            System.Diagnostics.Debug.WriteLine(">> {0}", Token.Type);
+
 
             switch (Token.Type)
             {

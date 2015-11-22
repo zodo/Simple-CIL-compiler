@@ -2,11 +2,12 @@
 {
     public enum SymbolType
     {
+        Unknown,
         Integer,
         Double,
         String,
         Bool,
         Function,
-        Unknown
+        Void
     }
 }

@@ -5,6 +5,8 @@
     using System.Linq;
     using System.Windows.Forms;
 
+    using AST;
+
     using Semantic;
     using Semantic.Data;
 
@@ -19,20 +21,24 @@
 
             //var highlighter = new TextHighlighter(source, scanner, parser);
 
-            var tree = parser.Parse(source.Text, "", new ParseTreeWithSemantic());
+            var tree = parser.Parse(source.Text, "", new AstGenerationTree());
+            PopulateSyntaxTree(tree.Nodes.First(), ParseTree);
+            PopulateTokens(scanner);
 
             if (!tree.Errors.Any())
             {
-                tree.Eval();
-                var r = Namespaces.Root;
-                
+                try
+                {
+                    tree.Eval();
+                    var r = Namespaces.Root;
+                    var p = AstCreator.GetProgram();
+                    PopulateIdentifierTree(Namespaces.Root, IdentifierTree);
+                }
+                catch (ParseException parseException)
+                {
+                    tree.Errors.Add(parseException.Error);
+                }
             }
-            
-            PopulateSyntaxTree(tree.Nodes.First(), ParseTree);
-
-            PopulateIdentifierTree(Namespaces.Root, IdentifierTree);
-
-            PopulateTokens(scanner);
 
             Status = $"Errors: {string.Join(Environment.NewLine, tree.Errors.Select(e => e.ToString()))}{Environment.NewLine}";
         }
@@ -70,7 +76,7 @@
             var nodeText = namespc.Name;
             var singleNode = new TreeNode(nodeText) { Tag = namespc };
 
-            foreach (var literal in namespc.Symbols)
+            foreach (var literal in namespc.SymbolsSameLevel)
             {
                 var literalNode = new TreeNode($"{literal.Type} : {literal.Name}");
                 singleNode.Nodes.Add(literalNode);
@@ -79,6 +85,7 @@
             
             node.Nodes.Add(singleNode);
 
+            //            foreach (var child in namespc.Children.Where(x => x.Children.Any()))
             foreach (var child in namespc.Children)
             {
                 PopulateIdentifierTree(child, singleNode);

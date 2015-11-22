@@ -22,7 +22,7 @@
 [IgnoreCase]OR	-> @"or";
 [IgnoreCase]AND	-> @"and";
 [IgnoreCase]NOT	-> @"not"; 
-[IgnoreCase]OPER	-> @"in|out";
+[IgnoreCase]OPER	-> @"write";
 
 PLUSMINUS-> @"\+|-";
 MULTDIV	-> @"\*|/|\%|//";
@@ -44,6 +44,7 @@ STRING		-> @"@?\""(\""\""|[^\""])*\"""; // Магия.
 INTEGER	-> @"[0-9]+";
 DOUBLE		-> @"[0-9]*\.[0-9]+";
 [IgnoreCase]BOOL-> @"true|false";
+[IgnoreCase]READFUNC-> @"readnum|readstr";
 
 [IgnoreCase]IDENTIFIER-> @"[a-zA-Z_][a-zA-Z0-9_]*(?<!(^)(end|else|do|while|for|true|false|return|to|incby|global|or|and|not))(?!\w)"; // Черная магия.
 
@@ -70,7 +71,7 @@ Statement	-> IfStm | WhileStm | DoStm | ForStm | ReturnStm | CallOrAssign | Oper
 IfStm 		-> IF Expr Statements (ELSE Statements)?;
 WhileStm 	-> WHILE Expr? Statements;
 DoStm 		-> DO Statements WHILE Expr;
-ForStm 	-> FOR Variable Assign TO Expr (INCBY Expr)? Statements;
+ForStm 	-> FOR CallOrAssign TO Expr (INCBY Expr)? Statements;
 ReturnStm	-> RETURN Expr?;
 OperStm	-> OPER Call?;
 
@@ -81,7 +82,7 @@ Variable 	-> IDENTIFIER (Array | Call)?;
 Array		-> SQOPEN Expr SQCLOSE;
 Call		-> BROPEN Arguments? BRCLOSE;
 Arguments	-> Expr (COMMA Expr)*;
-Literal	-> INTEGER | DOUBLE | STRING | BOOL;
+Literal	-> INTEGER | DOUBLE | STRING | BOOL | READFUNC;
 
  
 // Выражения.

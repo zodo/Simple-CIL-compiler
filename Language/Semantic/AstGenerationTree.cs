@@ -2,11 +2,11 @@
 {
     using TinyPG;
 
-    public class ParseTreeWithSemantic : ParseTree
+    public class AstGenerationTree : ParseTree
     {
         public override ParseNode CreateNode(Token token, string text)
         {
-            ParseNode node = new ParseNodeWithSemantic(token, text);
+            ParseNode node = new AstGenerationNode(token, text);
             node.Parent = this;
             return node;
         }

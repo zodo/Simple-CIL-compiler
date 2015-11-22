@@ -46,13 +46,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AST\AstBase.cs" />
+    <Compile Include="AST\AstCreator.cs" />
+    <Compile Include="AST\Expressions\AddExpr.cs" />
+    <Compile Include="AST\Expressions\Expression.cs" />
+    <Compile Include="AST\Expressions\BoolExpr.cs" />
+    <Compile Include="AST\Expressions\LiteralExpr.cs" />
+    <Compile Include="AST\Expressions\MultPowUnaryExpr.cs" />
+    <Compile Include="AST\Expressions\TernaryExpr.cs" />
+    <Compile Include="AST\FuncDeclaration.cs" />
+    <Compile Include="AST\FuncImplementation.cs" />
+    <Compile Include="AST\GlobalVariable.cs" />
+    <Compile Include="AST\Program.cs" />
+    <Compile Include="AST\Variable.cs" />
     <Compile Include="Helpers.cs" />
     <Compile Include="Semantic\Namespaces.cs" />
     <Compile Include="Semantic\Data\Symbol.cs" />
     <Compile Include="Semantic\Data\SymbolType.cs" />
     <Compile Include="Semantic\Data\Namespace.cs" />
-    <Compile Include="Semantic\ParseNodeWithSemantic.cs" />
-    <Compile Include="Semantic\ParseTreeWithSemantic.cs" />
+    <Compile Include="Semantic\ParseException.cs" />
+    <Compile Include="Semantic\AstGenerationNode.cs" />
+    <Compile Include="Semantic\AstGenerationTree.cs" />
     <Compile Include="SourceCodeHandler.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>

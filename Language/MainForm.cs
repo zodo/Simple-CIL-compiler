@@ -14,15 +14,10 @@ namespace Language
 
         private string _filePath;
 
-        private Form _identForm;
-
         public MainForm()
         {
             InitializeComponent();
             textBoxProgram.SelectionTabs = new int[] { 20, 40, 60, 80 };
-            _identForm = new Form() { Width = 400, Height = 700, Text = @"Symbol table" };
-            var t = new TreeView() { Dock = DockStyle.Fill, Name = "IdentifierTreeView" };
-            _identForm.Controls.Add(t);
         }
 
         private void runToolStripMenuItem1_Click(object sender, EventArgs e)
@@ -32,10 +27,12 @@ namespace Language
             parseTreeView.Nodes.Add(handler.ParseTree.FirstNode);
             textBoxStatus.Text = $"{handler.Status}{Environment.NewLine}{string.Join(Environment.NewLine, handler.Tokens)}";
 
-            var tree = (TreeView)_identForm.Controls.Find("IdentifierTreeView", false).First();
-            tree.Nodes.Clear();
-            tree.Nodes.Add(handler.IdentifierTree.FirstNode);
-            tree.ExpandAll();
+            if (handler.IdentifierTree?.FirstNode != null)
+            {
+                IdentifierTreeView.Nodes.Clear();
+                IdentifierTreeView.Nodes.Add(handler.IdentifierTree.FirstNode);
+                IdentifierTreeView.ExpandAll();
+            }
         }
 
         private void parseTreeView_AfterSelect(object sender, TreeViewEventArgs e)
@@ -61,7 +58,7 @@ namespace Language
 
         private void identifierTableToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            _identForm.Show();
+            
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)

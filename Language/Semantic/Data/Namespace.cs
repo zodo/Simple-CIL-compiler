@@ -43,6 +43,8 @@
         public IReadOnlyCollection<Symbol> Symbols => Owner?.Symbols.Concat(_symbols).ToList() ?? _symbols;
         //public IReadOnlyCollection<Symbol> Symbols => _symbols;
 
+        public IReadOnlyCollection<Symbol> SymbolsSameLevel => _symbols; 
+
 
         public void AddSymbol(Symbol symbol, ParseNode node)
         {

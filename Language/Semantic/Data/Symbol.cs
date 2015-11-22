@@ -11,7 +11,7 @@
             Name = name;
         }
 
-        public SymbolType Type { get; }
+        public SymbolType Type { get; set; }
 
         private string Value { get; set; }
 
