@@ -7,6 +7,7 @@ namespace Language.Semantic
 
     using AST;
     using AST.Expressions;
+    using AST.Statements;
 
     using Data;
 
@@ -83,7 +84,6 @@ namespace Language.Semantic
 
             AstCreator.GlobalVariables.Add(new GlobalVariable
             {
-                Namespace = Namespaces.Current,
                 Value = symbol
             });
             Namespaces.Current.AddSymbol(symbol, identNode);
@@ -103,34 +103,38 @@ namespace Language.Semantic
             {
                 if (arguments.Count > 0)
                 {
-                    throw new ParseException {Error = new ParseError("Main не может иметь аргументов", 0, GetNode(TokenType.IDENTIFIER)) };
+                    throw new ParseException("Main не может иметь аргументов",GetNode(TokenType.IDENTIFIER));
                 }
                 if (AstCreator.FuncImplementation.Count == 0)
                 {
-                    AstCreator.FuncImplementation.Push(new FuncImplementation());
+                    AstCreator.FuncImplementation.Push(new FuncImplementation {Node = this, Name = "main"});
                     Namespaces.LevelDown(new Namespace(funcName));
 
-                    GetNode(TokenType.Statements)?.Eval(tree);
+                    var stms = (CodeBlock)GetNode(TokenType.Statements).Eval(tree);
+                    AstCreator.FuncImplementation.Peek().Code = stms;
 
                     Namespaces.LevelUp();
                     AstCreator.FuncImplementations.Add(AstCreator.FuncImplementation.Pop());
                 }
                 else
                 {
-                    throw new ParseException { Error = new ParseError("нельзя вызвать main", 0, GetNode(TokenType.IDENTIFIER))};
+                    throw new ParseException("нельзя вызвать main",  GetNode(TokenType.IDENTIFIER));
                 }
             }
-            else if (AstCreator.FuncImplementation.Count > 0)
+            else if (AstCreator.FuncImplementation.Count > 0 && AstCreator.FuncImplementation.Peek().Name.StartsWith($"{funcName}_"))
             {
                 var exprNode = GetNode(TokenType.Expr);
+                var funcImpl = AstCreator.FuncImplementation.Peek();
                 if (exprNode != null)
                 {
-                    var expr = (Expression)exprNode.Eval(tree);
-                    AstCreator.FuncImplementation.Peek().ReturnType = expr.GetExprType();
+                    var expr = (ExpressionBase)exprNode.Eval(tree);
+                    funcImpl.ReturnExpression = expr;
+                    funcImpl.ReturnType = expr.GetExprType();
                 }
                 else
                 {
-                    GetNode(TokenType.Statements)?.Eval(tree);
+                    var stms = (CodeBlock)GetNode(TokenType.Statements).Eval(tree);
+                    funcImpl.Code = stms;
                 }
             }
             else
@@ -142,19 +146,14 @@ namespace Language.Semantic
                         new FuncDeclaration
                         {
                             Name = funcName,
-                            FunctionNode = this,
-                            ParseTree = tree,
+                            Node = this,
                             Arguments = arguments.Select(x => x.Token.Text).ToList()
                         });
                     Namespaces.Current.AddSymbol(new Symbol(SymbolType.Function, "", funcName), GetNode(TokenType.IDENTIFIER));
                 }
                 else
                 {
-                    throw new ParseException
-                    {
-                        Error = new ParseError(
-                            $"Повтороное объявление функции {funcName}", 0, GetNode(TokenType.IDENTIFIER))
-                    };
+                    throw new ParseException($"Повтороное объявление функции {funcName}", GetNode(TokenType.IDENTIFIER));
                 }
             }
 
@@ -175,16 +174,17 @@ namespace Language.Semantic
         protected override object EvalStatements(ParseTree tree, params object[] paramlist)
         {
             Namespaces.LevelDown(new Namespace());
-            foreach (var parseNode in nodes.OfTokenType(TokenType.Statement))
+            var statements = new CodeBlock
             {
-                parseNode.Eval(tree);
-            }
+                Statements = nodes.OfTokenType(TokenType.Statement).Select(x => x.Eval(tree)).Cast<StatementBase>().ToList(),
+                Node = this
+            };
             Namespaces.LevelUp();
             if (!Namespaces.Current.Children.Last().SymbolsSameLevel.Any())
             {
                 Namespaces.Current.Children.RemoveAt(Namespaces.Current.Children.Count - 1);
             }
-            return null;
+            return statements;
         }
 
         /// <summary>
@@ -192,8 +192,7 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalStatement(ParseTree tree, params object[] paramlist)
         {
-            nodes.FirstOrDefault()?.Eval(tree);
-            return null;
+            return nodes.First().Eval(tree);
         }
 
         /// <summary>
@@ -201,7 +200,18 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalIfStm(ParseTree tree, params object[] paramlist)
         {
-            return base.EvalIfStm(tree, paramlist);
+            var expr = (ExpressionBase)GetNode(TokenType.Expr).Eval(tree);
+            var iftrue = (CodeBlock)nodes.OfTokenType(TokenType.Statements).First().Eval(tree);
+            var iffalse = nodes.OfTokenType(TokenType.Statements).Count() > 1 ? (CodeBlock)nodes.OfTokenType(TokenType.Statements).Last().Eval(tree):null;
+            var ifstm = new IfStm
+            {
+                Node = this,
+                Condition = expr,
+                IfFalse = iffalse,
+                IfTrue = iftrue
+                
+            };
+            return ifstm;
         }
 
         /// <summary>
@@ -209,7 +219,14 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalWhileStm(ParseTree tree, params object[] paramlist)
         {
-            return base.EvalWhileStm(tree, paramlist);
+            var whilestm = new DoWhileStm
+            {
+                Condition = (ExpressionBase)GetNode(TokenType.Expr)?.Eval(tree),
+                Statements = (CodeBlock)GetNode(TokenType.Statements).Eval(tree),
+                Type = LoopType.While,
+                Node = this
+            };
+            return whilestm;
         }
 
         /// <summary>
@@ -217,7 +234,14 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalDoStm(ParseTree tree, params object[] paramlist)
         {
-            return base.EvalDoStm(tree, paramlist);
+            var whileDoStm = new DoWhileStm
+            {
+                Condition = (ExpressionBase)GetNode(TokenType.Expr)?.Eval(tree),
+                Statements = (CodeBlock)GetNode(TokenType.Statements).Eval(tree),
+                Type = LoopType.DoWhile,
+                Node = this
+            };
+            return whileDoStm;
         }
 
         /// <summary>
@@ -225,7 +249,16 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalForStm(ParseTree tree, params object[] paramlist)
         {
-            return base.EvalForStm(tree, paramlist);
+            var forStm = new ForStm
+            {
+                Variable = (Variable)GetNode(TokenType.Variable).Eval(tree, true),
+                AssignExpression = (ExpressionBase)GetNode(TokenType.Assign).Eval(tree),
+                ToExpression = (ExpressionBase)nodes.OfTokenType(TokenType.Expr).First().Eval(tree),
+                IncByExpression = nodes.OfTokenType(TokenType.Expr).Count() > 1 ? (ExpressionBase)nodes.OfTokenType(TokenType.Expr).Last().Eval(tree) : null,
+                Statements = (CodeBlock)GetNode(TokenType.Statements).Eval(tree),
+                Node = this
+            };
+            return forStm;
         }
 
         /// <summary>
@@ -233,21 +266,24 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalReturnStm(ParseTree tree, params object[] paramlist)
         {
+            var returnStm = new ReturnStm {Node = this};
             var exprNode = GetNode(TokenType.Expr);
             var returnType = SymbolType.Void;
             var funcImpl = AstCreator.FuncImplementation.Peek();
             if (exprNode != null)
             {
-                var expr = (Expression)exprNode.Eval(tree);
+                var expr = (ExpressionBase)exprNode.Eval(tree);
                 returnType = expr.GetExprType();
+                returnStm.ReturnExpression = expr;
+
             }
             if (funcImpl.ReturnType != SymbolType.Unknown && funcImpl.ReturnType != returnType)
             {
-                throw new ParseException {Error = new ParseError("Возвращаемые значения должны быть одинакового типа", 0, GetNode(TokenType.RETURN))};
+                throw new ParseException("Возвращаемые значения должны быть одинакового типа", GetNode(TokenType.RETURN));
             }
             AstCreator.FuncImplementation.Peek().ReturnType = returnType;
             
-            return null;
+            return returnStm;
         }
 
         /// <summary>
@@ -255,7 +291,7 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalOperStm(ParseTree tree, params object[] paramlist)
         {
-            return base.EvalOperStm(tree, paramlist);
+            return new OperStm {Operation = GetNode(TokenType.OPER).Token.Text, Node = this};
         }
 
         /// <summary>
@@ -263,56 +299,50 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalCallOrAssign(ParseTree tree, params object[] paramlist)
         {
+            var callOrAssignStm = new CallOrAssign {Node = this};
             var assignNode = GetNode(TokenType.Assign);
             var variable = (Variable)GetNode(TokenType.Variable).Eval(tree, true);
+            callOrAssignStm.Variable = variable;
             if (assignNode != null)
             {
                 if (variable.Type == VariableType.Call)
                 {
-                    throw new ParseException
-                    {
-                        Error = new ParseError("Попытка присвоить значение вызову функции", 0x009, assignNode)
-                    };
+                    throw new ParseException("Попытка присвоить значение вызову функции", assignNode);
                 }
-                else
+                var symbol = Namespaces.Current.Symbols.SingleOrDefault(x => x.Name == variable.Name);
+                var expr = (ExpressionBase)assignNode.Eval(tree);
+                callOrAssignStm.AssignExpression = expr;
+                if (symbol != null)
                 {
-                    var symbol = Namespaces.Current.Symbols.SingleOrDefault(x => x.Name == variable.Name);
-                    var expr = (Expression)assignNode.Eval(tree);
-                    if (symbol != null)
-                    {
 
-                        if (symbol.Type == SymbolType.Unknown)
-                        {
-                            symbol.Type = expr.GetExprType();
-                        }
-                        else
-                        {
-                            if (symbol.Type != expr.GetExprType())
-                            {
-                                throw new ParseException
-                                {
-                                    Error = new ParseError("Невозможно изменить тип переменной", 0x009, assignNode)
-                                };
-                            }
-                        }
+                    if (symbol.Type == SymbolType.Unknown)
+                    {
+                        symbol.Type = expr.GetExprType();
                     }
                     else
                     {
-                        Namespaces.Current.AddSymbol(
-                            new Symbol(expr.GetExprType(), "", variable.Name),
-                            GetNode(TokenType.Variable));
+                        if (symbol.Type != expr.GetExprType())
+                        {
+                            throw new ParseException("Невозможно изменить тип переменной", assignNode);
+                        }
                     }
+                }
+                else
+                {
+                    Namespaces.Current.AddSymbol(
+                        new Symbol(expr.GetExprType(), "", variable.Name),
+                        GetNode(TokenType.Variable));
                 }
             }
             else
             {
                 if (variable.Type == VariableType.Simple || variable.Type == VariableType.Array)
                 {
-                    throw new ParseException {Error = new ParseError("Отсутствует правая часть выражения", 0, GetNode(TokenType.Variable))};
+                    throw new ParseException("Отсутствует правая часть выражения", GetNode(TokenType.Variable));
                 }
             }
 
-            return null;
+            return callOrAssignStm;
         }
 
         /// <summary>
@@ -320,7 +350,7 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalAssign(ParseTree tree, params object[] paramlist)
         {
-            return (Expression)GetNode(TokenType.Expr).Eval(tree);
+            return (ExpressionBase)GetNode(TokenType.Expr).Eval(tree);
         }
 
         /// <summary>
@@ -334,14 +364,14 @@ namespace Language.Semantic
             {
                 if (paramlist != null && paramlist.Any() && (bool)paramlist.First())
                 {
-                    return new Variable { Name = identName, Namespace = Namespaces.Current, Type = VariableType.Simple };
+                    return new Variable { Name = identName,  Type = VariableType.Simple , Node = this};
                 }
                 var existingSymbol = Namespaces.Current.Symbols.SingleOrDefault(x => x.Name == identName);
                 if (existingSymbol != null)
                 {
-                    return new LiteralExpr {SymbolType = existingSymbol.Type, Namespace = Namespaces.Current};
+                    return new LiteralExpr {SymbolType = existingSymbol.Type, Node = this, Value = identName};
                 }
-                throw new ParseException { Error = new ParseError($"Использование непроинициализированной переменной {identName}", 0, identNode)};
+                throw new ParseException($"Использование непроинициализированной переменной {identName}", identNode);
             }
 
             if (GetNode(TokenType.Call) != null)
@@ -350,42 +380,51 @@ namespace Language.Semantic
                 var declaration =
                     AstCreator.FuncDeclarations.SingleOrDefault(
                         x => x.Name == identName && x.ArgumentsAmount == arguments.Count);
+                var funcImplName = $"{identName}_{string.Join("_", arguments.Select(x => x.ToString()))}";
                 if (declaration == null)
                 {
-                    throw new ParseException { Error = new ParseError($"Попытка использовать необъявленную функцию {identName}", 0, identNode)};
+                    throw new ParseException($"Попытка использовать необъявленную функцию {identName}",identNode);
                 }
                 else
                 {
                     if (AstCreator.FuncImplementation.Count > 0)
                     {
-                        if (AstCreator.FuncImplementation.Any(x => x.Name == identName))
+                        if (AstCreator.FuncImplementation.Any(x => x.Name == funcImplName))
                         {
-                            throw new ParseException {Error = new ParseError("Рекурсия не поддерживается", 0, identNode)};
+                            throw new ParseException("Рекурсия не поддерживается", identNode);
                         }
                     }
-                    AstCreator.FuncImplementation.Push(new FuncImplementation {Name = identName});
-                    var node = declaration.FunctionNode;
-                    var currentNamespace = Namespaces.Current;
-                    Namespaces.Current = Namespaces.Root;
-                    Namespaces.LevelDown(new Namespace($"{identName}_{string.Join("_", arguments.Select(x => x.ToString()))}"));
-                    for (int index = 0; index < arguments.Count; index++)
+                    var existedImpl = AstCreator.FuncImplementations.SingleOrDefault(x => x.Name == funcImplName);
+                    if (existedImpl == null)
                     {
-                        var symbolType = arguments[index];
-                        var symbol = new Symbol(symbolType, "", declaration.Arguments[index]);
-                        Namespaces.Current.AddSymbol(symbol, identNode);
-                        AstCreator.FuncImplementation.Peek().Arguments.Add(symbol);
-                        
+                        existedImpl = new FuncImplementation { Name = funcImplName, Node = this };
+                        AstCreator.FuncImplementation.Push(existedImpl);
+                        var node = declaration.Node;
+                        var currentNamespace = Namespaces.Current;
+                        Namespaces.Current = Namespaces.Root;
+                        Namespaces.LevelDown(new Namespace(funcImplName));
+                        for (int index = 0; index < arguments.Count; index++)
+                        {
+                            var symbolType = arguments[index];
+                            var symbol = new Symbol(symbolType, "", declaration.Arguments[index]);
+                            Namespaces.Current.AddSymbol(symbol, identNode);
+                            existedImpl.Arguments.Add(symbol);
+
+                        }
+                        node.Eval(tree);
+                        Namespaces.Current = currentNamespace;
+                        AstCreator.FuncImplementations.Add(AstCreator.FuncImplementation.Pop());
                     }
-                    node.Eval(tree);
-                    Namespaces.Current = currentNamespace;
-                    AstCreator.FuncImplementations.Add(AstCreator.FuncImplementation.Pop());
 
                     if (paramlist != null && paramlist.Any() && (bool)paramlist.First())
                     {
-                        return new Variable {Name = identName, Type = VariableType.Call};
+                        return new Variable {Name = funcImplName, Type = VariableType.Call, Node = this};
                     }
-
-                    return new LiteralExpr { SymbolType = AstCreator.FuncImplementations.Last().ReturnType};
+                    if (existedImpl.ReturnType == SymbolType.Void || existedImpl.ReturnType == SymbolType.Unknown)
+                    {
+                        throw new ParseException("Невозможно использовать функции, возвращающие void в выражениях", this);
+                    }
+                    return new LiteralExpr { Value = funcImplName, SymbolType = existedImpl.ReturnType, Node = this};
                 }
 
 
@@ -416,7 +455,7 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalArguments(ParseTree tree, params object[] paramlist)
         {
-            return nodes.OfTokenType(TokenType.Expr).Select(x => x.Eval(tree)).Cast<Expression>().Select(x => x.GetExprType()).ToList();
+            return nodes.OfTokenType(TokenType.Expr).Select(x => x.Eval(tree)).Cast<ExpressionBase>().Select(x => x.GetExprType()).ToList();
         }
 
         /// <summary>
@@ -424,29 +463,29 @@ namespace Language.Semantic
         /// </summary>
         protected override object EvalLiteral(ParseTree tree, params object[] paramlist)
         {
-            // Определить тип, вернуть экземпляр Symbol
+            var value = nodes.First().Token.Text;
             var nodei = GetNode(TokenType.INTEGER);
             if (nodei != null)
             {
-                return new LiteralExpr {SymbolType = SymbolType.Integer, Namespace = Namespaces.Current};
+                return new LiteralExpr {SymbolType = SymbolType.Integer, Node = this, Value = value};
             }
 
             var noded = GetNode(TokenType.DOUBLE);
             if (noded != null)
             {
-                return new LiteralExpr {SymbolType = SymbolType.Double, Namespace = Namespaces.Current};
+                return new LiteralExpr {SymbolType = SymbolType.Double, Node = this, Value = value };
             }
 
             var nodestr = GetNode(TokenType.STRING);
             if (nodestr != null)
             {
-                return new LiteralExpr {SymbolType = SymbolType.String, Namespace = Namespaces.Current};
+                return new LiteralExpr {SymbolType = SymbolType.String, Node = this, Value = value };
             }
 
             var nodeb = GetNode(TokenType.BOOL);
             if (nodeb != null)
             {
-                return new LiteralExpr {SymbolType = SymbolType.Bool, Namespace = Namespaces.Current};
+                return new LiteralExpr {SymbolType = SymbolType.Bool, Node = this, Value = value };
             }
 
             var nodefunc = GetNode(TokenType.READFUNC);
@@ -456,9 +495,9 @@ namespace Language.Semantic
                 switch (functext)
                 {
                     case "readnum":
-                        return new LiteralExpr {SymbolType = SymbolType.Integer, Namespace = Namespaces.Current};
+                        return new LiteralExpr {SymbolType = SymbolType.Integer, Node = this, Value = value };
                     case "readstr":
-                        return new LiteralExpr {SymbolType = SymbolType.String, Namespace = Namespaces.Current};
+                        return new LiteralExpr {SymbolType = SymbolType.String, Node = this, Value = value };
                 }
             }
             return null;
@@ -471,14 +510,15 @@ namespace Language.Semantic
         {
             if (GetNode(TokenType.QUESTION) == null)
             {
-                return (Expression)GetNode(TokenType.OrExpr).Eval(tree);
+                return (ExpressionBase)GetNode(TokenType.OrExpr).Eval(tree);
             }
             var ternaryExpr = new TernaryExpr
             {
-                First = (Expression)GetNode(TokenType.OrExpr).Eval(tree),
-                Second = (Expression)nodes.OfTokenType(TokenType.Expr).First().Eval(tree),
-                Third = (Expression)nodes.OfTokenType(TokenType.Expr).Last().Eval(tree),
-                Namespace = Namespaces.Current
+                First = (ExpressionBase)GetNode(TokenType.OrExpr).Eval(tree),
+                Second = (ExpressionBase)nodes.OfTokenType(TokenType.Expr).First().Eval(tree),
+                Third = (ExpressionBase)nodes.OfTokenType(TokenType.Expr).Last().Eval(tree),
+                Node = this
+
             };
             return ternaryExpr;
         }
@@ -490,20 +530,21 @@ namespace Language.Semantic
         {
             if (GetNode(TokenType.OR) == null)
             {
-                return (Expression)GetNode(TokenType.AndExpr).Eval(tree);
+                return (ExpressionBase)GetNode(TokenType.AndExpr).Eval(tree);
             }
 
-            var expressions = new Stack<Expression>(nodes.OfTokenType(TokenType.AndExpr).Select(n => n.Eval(tree)).Cast<Expression>());
+            var expressions = new Stack<ExpressionBase>(nodes.OfTokenType(TokenType.AndExpr).Select(n => n.Eval(tree)).Cast<ExpressionBase>());
 
             while (expressions.Count > 1)
             {
                 var rightExpr = expressions.Pop();
                 var leftExpr = expressions.Pop();
-                var newExpr = new BoolExpr
+                var newExpr = new AndOrExpr
                 {
                     First = leftExpr,
                     Second = rightExpr,
-                    Namespace = Namespaces.Current
+                    Node = this,
+                    Type = AndOrOperation.Or
                 };
                 expressions.Push(newExpr);
             }
@@ -518,20 +559,21 @@ namespace Language.Semantic
         {
             if (GetNode(TokenType.AND) == null)
             {
-                return (Expression)GetNode(TokenType.NotExpr).Eval(tree);
+                return (ExpressionBase)GetNode(TokenType.NotExpr).Eval(tree);
             }
 
-            var expressions = new Stack<Expression>(nodes.OfTokenType(TokenType.NotExpr).Select(n => n.Eval(tree)).Cast<Expression>());
+            var expressions = new Stack<ExpressionBase>(nodes.OfTokenType(TokenType.NotExpr).Select(n => n.Eval(tree)).Cast<ExpressionBase>());
 
             while (expressions.Count > 1)
             {
                 var rightExpr = expressions.Pop();
                 var leftExpr = expressions.Pop();
-                var newExpr = new BoolExpr
+                var newExpr = new AndOrExpr
                 {
                     First = leftExpr,
                     Second = rightExpr,
-                    Namespace = Namespaces.Current
+                    Node = this,
+                    Type = AndOrOperation.And
                 };
                 expressions.Push(newExpr);
             }
@@ -546,9 +588,9 @@ namespace Language.Semantic
         {
             if (GetNode(TokenType.NOT) == null)
             {
-                return (Expression)GetNode(TokenType.CompExpr).Eval(tree);
+                return (ExpressionBase)GetNode(TokenType.CompExpr).Eval(tree);
             }
-            var unaryExpr = new MultPowUnaryExpr { First = (Expression)GetNode(TokenType.CompExpr).Eval(tree), Namespace = Namespaces.Current};
+            var unaryExpr = new NotExpr { First = (ExpressionBase)GetNode(TokenType.CompExpr).Eval(tree), Node = this };
 
             return unaryExpr;
         }
@@ -560,14 +602,15 @@ namespace Language.Semantic
         {
             if (GetNode(TokenType.COMP) == null)
             {
-                return (Expression)GetNode(TokenType.AddExpr).Eval(tree);
+                return (ExpressionBase)GetNode(TokenType.AddExpr).Eval(tree);
             }
 
-            var boolExpr = new BoolExpr
+            var boolExpr = new CompareExpr
             {
-                First = (Expression)nodes.OfTokenType(TokenType.AddExpr).First().Eval(tree),
-                Second = (Expression)nodes.OfTokenType(TokenType.AddExpr).Last().Eval(tree),
-                Namespace = Namespaces.Current
+                Node = this,
+                First = (ExpressionBase)nodes.OfTokenType(TokenType.AddExpr).First().Eval(tree),
+                Second = (ExpressionBase)nodes.OfTokenType(TokenType.AddExpr).Last().Eval(tree),
+                OperationText = GetNode(TokenType.COMP).Token.Text
             };
 
             return boolExpr;
@@ -580,10 +623,11 @@ namespace Language.Semantic
         {
             if (GetNode(TokenType.PLUSMINUS) == null)
             {
-                return (Expression)GetNode(TokenType.MultExpr).Eval(tree);
+                return (ExpressionBase)GetNode(TokenType.MultExpr).Eval(tree);
             }
 
-            var expressions = new Stack<Expression>(nodes.OfTokenType(TokenType.MultExpr).Select(n => n.Eval(tree)).Cast<Expression>());
+            var expressions = new Stack<ExpressionBase>(nodes.OfTokenType(TokenType.MultExpr).Select(n => n.Eval(tree)).Cast<ExpressionBase>());
+            var operations = new Stack<string>(nodes.OfTokenType(TokenType.PLUSMINUS).Select(x => x.Token.Text));
 
             while (expressions.Count > 1)
             {
@@ -593,7 +637,8 @@ namespace Language.Semantic
                 {
                     First = leftExpr,
                     Second = rightExpr,
-                    Namespace = Namespaces.Current
+                    Node = this,
+                    OperationText = operations.Pop()
                 };
                 expressions.Push(newExpr);
             }
@@ -608,20 +653,22 @@ namespace Language.Semantic
         {
             if (GetNode(TokenType.MULTDIV) == null)
             {
-                return (Expression)GetNode(TokenType.PowExpr).Eval(tree);
+                return (ExpressionBase)GetNode(TokenType.PowExpr).Eval(tree);
             }
 
-            var expressions = new Stack<Expression>(nodes.OfTokenType(TokenType.PowExpr).Select(n => n.Eval(tree)).Cast<Expression>());
+            var expressions = new Stack<ExpressionBase>(nodes.OfTokenType(TokenType.PowExpr).Select(n => n.Eval(tree)).Cast<ExpressionBase>());
+            var operations = new Stack<string>(nodes.OfTokenType(TokenType.MULTDIV).Select(x => x.Token.Text));
 
             while (expressions.Count > 1)
             {
                 var rightExpr = expressions.Pop();
                 var leftExpr = expressions.Pop();
-                var newExpr = new MultPowUnaryExpr
+                var newExpr = new MultPowExpr
                 {
                     First = leftExpr,
                     Second = rightExpr,
-                    Namespace = Namespaces.Current
+                    Node = this,
+                    OperationText = operations.Pop()
                 };
                 expressions.Push(newExpr);
             }
@@ -638,20 +685,23 @@ namespace Language.Semantic
         {
             if (GetNode(TokenType.POW) == null)
             {
-                return (Expression)GetNode(TokenType.UnaryExpr).Eval(tree);
+                return (ExpressionBase)GetNode(TokenType.UnaryExpr).Eval(tree);
             }
 
-            var expressions = new Stack<Expression>(nodes.OfTokenType(TokenType.UnaryExpr).Select(n => n.Eval(tree)).Cast<Expression>());
+            var expressions = new Stack<ExpressionBase>(nodes.OfTokenType(TokenType.UnaryExpr).Select(n => n.Eval(tree)).Cast<ExpressionBase>());
+            var operations = new Stack<string>(nodes.OfTokenType(TokenType.POW).Select(x => x.Token.Text));
+
 
             while (expressions.Count > 1)
             {
                 var rightExpr = expressions.Pop();
                 var leftExpr = expressions.Pop();
-                var newExpr = new MultPowUnaryExpr
+                var newExpr = new MultPowExpr
                 {
                     First = leftExpr,
                     Second = rightExpr,
-                    Namespace = Namespaces.Current
+                    Node = this,
+                    OperationText = operations.Pop()
                 };
                 expressions.Push(newExpr);
             }
@@ -666,13 +716,14 @@ namespace Language.Semantic
         {
             if (GetNode(TokenType.UNARYOP) == null)
             {
-                return (Expression)GetNode(TokenType.Atom).Eval(tree);
+                return (ExpressionBase)GetNode(TokenType.Atom).Eval(tree);
             }
 
-            var unaryExpr = new MultPowUnaryExpr
+            var unaryExpr = new UnaryExpr
             {
-                First = (Expression)GetNode(TokenType.Atom).Eval(tree),
-                Namespace = Namespaces.Current
+                First = (ExpressionBase)GetNode(TokenType.Atom).Eval(tree),
+                Node = this,
+                OperationText = GetNode(TokenType.UNARYOP).Token.Text
             };
             
             return unaryExpr;
@@ -686,43 +737,18 @@ namespace Language.Semantic
             var literalNode = GetNode(TokenType.Literal);
             if (literalNode != null)
             {
-                return ((Expression)literalNode.Eval(tree));
+                return ((ExpressionBase)literalNode.Eval(tree));
             }
 
             var variableNode = GetNode(TokenType.Variable);
             if (variableNode != null)
             {
-                return (Expression)variableNode.Eval(tree);
+                return (ExpressionBase)variableNode.Eval(tree);
             }
 
             var exprNode = GetNode(TokenType.Expr);
-            return ((Expression)exprNode.Eval(tree));
+            return ((ExpressionBase)exprNode.Eval(tree));
             
-        }
-
-        private static object GetExprType(List<SymbolType> types)
-        {
-            if (types.Contains(SymbolType.Unknown))
-            {
-                return SymbolType.Unknown;
-            }
-
-            if (types.Contains(SymbolType.String))
-            {
-                return SymbolType.String;
-            }
-
-            if (types.Contains(SymbolType.Double))
-            {
-                return SymbolType.Double;
-            }
-
-            if (types.Contains(SymbolType.Integer))
-            {
-                return SymbolType.Integer;
-            }
-
-            return SymbolType.Bool;
         }
     }
 }

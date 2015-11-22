@@ -32,6 +32,7 @@
                     tree.Eval();
                     var r = Namespaces.Root;
                     var p = AstCreator.GetProgram();
+                    ASTTree = p.GetNodes();
                     PopulateIdentifierTree(Namespaces.Root, IdentifierTree);
                 }
                 catch (ParseException parseException)
@@ -68,6 +69,8 @@
         public TreeNode ParseTree { get; private set; } = new TreeNode();
 
         public TreeNode IdentifierTree { get; set; } = new TreeNode();
+
+        public TreeNode ASTTree { get; set; }
 
         public string Status { get; private set; }
 

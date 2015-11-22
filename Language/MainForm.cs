@@ -25,8 +25,14 @@ namespace Language
             handler = new SourceCodeHandler(textBoxProgram);
             parseTreeView.Nodes.Clear();
             parseTreeView.Nodes.Add(handler.ParseTree.FirstNode);
+            parseTreeView.ExpandAll();
             textBoxStatus.Text = $"{handler.Status}{Environment.NewLine}{string.Join(Environment.NewLine, handler.Tokens)}";
-
+            if (handler.ASTTree != null)
+            {
+                ASTtreeView.Nodes.Clear();
+                ASTtreeView.Nodes.Add(handler.ASTTree);
+                ASTtreeView.ExpandAll();
+            }
             if (handler.IdentifierTree?.FirstNode != null)
             {
                 IdentifierTreeView.Nodes.Clear();
