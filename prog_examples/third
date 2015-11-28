@@ -1,0 +1,21 @@
+main
+    write("nachalo")
+    count = readnum
+    arr[0]=0
+    i = 0
+    while i < count 
+        arr[i] = readnum
+        count = count + 1
+    end
+    i = 0
+    while i < count
+        j = 0
+        while j < i
+            if arr[i] < arr[j]
+                temp = arr[i]
+                arr[i] = arr[j]
+                arr[j] = temp
+            end
+        end 
+    end
+end

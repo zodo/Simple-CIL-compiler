@@ -7,6 +7,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Language", "Language\Langua
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TinyPG", "..\TinyPG fork\TinyPG sources\TinyPG\TinyPG.csproj", "{423B1883-6B35-401B-BB70-B7167F847575}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".truefakes", ".truefakes", "{1C6FDD5D-D1DC-41B2-A5AC-EEC9E95B1402}"
+	ProjectSection(SolutionItems) = preProject
+		.truefakes\TrueFakes.targets = .truefakes\TrueFakes.targets
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

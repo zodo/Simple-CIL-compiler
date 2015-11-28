@@ -1,6 +1,6 @@
 ﻿namespace Language.AST.Statements
 {
-    using System.Windows.Forms;
+    using Semantic.ASTVisitor;
 
     public class DoWhileStm : StatementBase
     {
@@ -10,12 +10,10 @@
 
         public LoopType Type { get; set; }
 
-        public override TreeNode GetNodes()
+       
+        public override dynamic Accept(IAstVisitor visitor)
         {
-            var node = new TreeNode(Type.ToString());
-            node.Nodes.Add(new TreeNode("Condition") { Nodes = { Condition.GetNodes() } });
-            node.Nodes.Add(new TreeNode("Statements") {Nodes = { Statements.GetNodes() } });
-            return node;
+            return visitor.Visit(this);
         }
     }
 

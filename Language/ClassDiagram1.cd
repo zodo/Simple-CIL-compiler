@@ -1,0 +1,242 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Language.Semantic.AST.Arguments" Collapsed="true">
+    <Position X="5.75" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Semantic\AST\Arguments.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Language.AST.AstBase" Collapsed="true">
+    <Position X="32" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAEAAAA=</HashCode>
+      <FileName>Semantic\AST\AstBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Language.AST.ExpressionBase" Collapsed="true">
+    <Position X="38.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AggAAAAABAAAgQAAAAAAAAIAAAAAAAACIAAAAAAAAQA=</HashCode>
+      <FileName>Semantic\AST\Expressions\ExpressionBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Language.AST.FuncDeclaration" Collapsed="true">
+    <Position X="55.5" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAAAAAAAAAAAAAAAAQAAAAAAAAAIAAQAAAAAAA=</HashCode>
+      <FileName>Semantic\AST\FuncDeclaration.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Language.AST.FuncImplementation" Collapsed="true">
+    <Position X="57.75" Y="1.75" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAAAAAAAAAAAAAgBAQAAAAAAAAAAAAAAAAEAAA=</HashCode>
+      <FileName>Semantic\AST\FuncImplementation.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Language.AST.GlobalVariable" Collapsed="true">
+    <Position X="8" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Semantic\AST\GlobalVariable.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Language.AST.Program" Collapsed="true">
+    <Position X="10.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAoQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Semantic\AST\Program.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Language.AST.StatementBase">
+    <Position X="18.25" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Semantic\AST\Statements\StatementBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Language.AST.Expressions.AddExpr" Collapsed="true">
+    <Position X="37.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAABAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Semantic\AST\Expressions\AddExpr.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Language.AST.Expressions.AndOrExpr" Collapsed="true">
+    <Position X="44" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAABAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Semantic\AST\Expressions\AndOrExpr.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Language.AST.Expressions.CompareExpr" Collapsed="true">
+    <Position X="28.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAABAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Semantic\AST\Expressions\CompareExpr.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Language.AST.Expressions.LiteralExpr" Collapsed="true">
+    <Position X="32.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAABAAAAgAAAAAAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <FileName>Semantic\AST\Expressions\LiteralExpr.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Language.AST.Expressions.MultPowExpr" Collapsed="true">
+    <Position X="39.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAABAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Semantic\AST\Expressions\MultPowExpr.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Language.AST.Expressions.NotExpr" Collapsed="true">
+    <Position X="46.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Semantic\AST\Expressions\NotExpr.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Language.AST.Expressions.TernaryExpr" Collapsed="true">
+    <Position X="48.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Semantic\AST\Expressions\TernaryExpr.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Language.AST.Expressions.UnaryExpr" Collapsed="true">
+    <Position X="30.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAABAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Semantic\AST\Expressions\UnaryExpr.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Language.Semantic.AST.Expressions.CallFuncExpr" Collapsed="true">
+    <Position X="35" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAABAAAAAAAAAAAAAIAAAAAAAAAIAAAAAAAAAA=</HashCode>
+      <FileName>Semantic\AST\Expressions\CallFuncExpr.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Language.Semantic.AST.Expressions.GetVariableExpr" Collapsed="true">
+    <Position X="41.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAABAAAAAAAAAAAAAQAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Semantic\AST\Expressions\GetVariableExpr.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Language.Semantic.AST.LeftExprSide.LeftSideExprBase" Collapsed="true">
+    <Position X="52" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Semantic\AST\LeftExprSide\LeftSideExprBase.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Language.Semantic.AST.LeftExprSide.LeftSideExprCall" Collapsed="true">
+    <Position X="53.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAAAAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Semantic\AST\LeftExprSide\LeftSideExprCall.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Language.Semantic.AST.LeftExprSide.LeftSideExprVariable" Collapsed="true">
+    <Position X="50.75" Y="3.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Semantic\AST\LeftExprSide\LeftSideExprVariable.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Language.AST.Statements.CallOrAssign" Collapsed="true">
+    <Position X="14.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAIAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Semantic\AST\Statements\CallOrAssign.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Language.AST.Statements.CodeBlock" Collapsed="true">
+    <Position X="26" Y="1.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Semantic\AST\Statements\CodeBlock.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Language.AST.Statements.DoWhileStm">
+    <Position X="19.25" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAAAACAAAAAAAAAAAAAAAAABAAAAQAAAAAAAAA=</HashCode>
+      <FileName>Semantic\AST\Statements\DoWhileStm.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Language.AST.Statements.ForStm" Collapsed="true">
+    <Position X="21.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAIAAAAAAAAAAAAQAAAAAAAAAABAAAAAQBAAAAAAA=</HashCode>
+      <FileName>Semantic\AST\Statements\ForStm.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Language.AST.Statements.IfStm" Collapsed="true">
+    <Position X="23.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAAAACAAAAAAAAAAAAAAAgAAAAAAAAAAAAAGAA=</HashCode>
+      <FileName>Semantic\AST\Statements\IfStm.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Language.AST.Statements.OperStm" Collapsed="true">
+    <Position X="12.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAEAAAAAAAA=</HashCode>
+      <FileName>Semantic\AST\Statements\OperStm.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Language.AST.Statements.ReturnStm" Collapsed="true">
+    <Position X="17" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Semantic\AST\Statements\ReturnStm.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Language.Semantic.AstGenerationNode" Collapsed="true">
+    <Position X="14" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAIQQCCAMJAAAAIRAUAAIAAEiAEAAFgAJCGEAAEAAA=</HashCode>
+      <FileName>Semantic\AstGenerationNode.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Language.Semantic.AstGenerationTree" Collapsed="true">
+    <Position X="7.75" Y="7.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Semantic\AstGenerationTree.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TinyPG.ParseTree" Collapsed="true">
+    <Position X="5.75" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAoAIAAQAAAAAAAAAAAAAAAAAAQAAAAAABAAA=</HashCode>
+      <FileName>TinyPG\ParseTree.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TinyPG.ParseNode" Collapsed="true">
+    <Position X="8.75" Y="4.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AIAoQQCCIMJAAAAIRAUAQIAAEiAEAAFoAJCGGAAFIAA=</HashCode>
+      <FileName>TinyPG\ParseTree.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Language.GUI.SyntaxHiglightNode" Collapsed="true">
+    <Position X="10" Y="5.75" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAEAAIAAAAAAAABAAAAAAAAAAAA=</HashCode>
+      <FileName>GUI\SyntaxHiglightNode.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Language.GUI.SyntaxHiglightParseTree" Collapsed="true">
+    <Position X="3.75" Y="7.25" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAAQAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>GUI\SyntaxHiglightParseTree.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

@@ -8,6 +8,7 @@
         String,
         Bool,
         Function,
-        Void
+        Void,
+        Array
     }
 }

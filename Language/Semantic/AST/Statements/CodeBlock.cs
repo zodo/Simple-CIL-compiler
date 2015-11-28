@@ -2,18 +2,19 @@
 
 namespace Language.AST.Statements
 {
-    using System.Linq;
-    using System.Windows.Forms;
+    using Semantic.ASTVisitor;
 
-    public class CodeBlock : AstBase
+    public class CodeBlock : StatementBase
     {
         public List<StatementBase> Statements { get; set; }
 
-        public override TreeNode GetNodes()
+        
+        public List<CodeBlock> Children { get; set; } = new List<CodeBlock>(); 
+
+        
+        public override dynamic Accept(IAstVisitor visitor)
         {
-            var node = new TreeNode("CodeBlock");
-            node.Nodes.AddRange(Statements.Select(x => x.GetNodes()).ToArray());
-            return node;
+            return visitor.Visit(this);
         }
     }
 }

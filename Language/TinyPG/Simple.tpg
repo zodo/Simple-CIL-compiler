@@ -6,47 +6,47 @@
 
 
 // Терминалы.
-[Color(0, 0, 255)][IgnoreCase]GLOBAL -> @"global";
-[Color(0, 0, 255)][IgnoreCase]END  	-> @"end";
-[Color(0, 0, 255)][IgnoreCase]RETURN	-> @"return";
-[Color(0, 0, 255)] ARROW  -> @"=>";
+[Style("boldBlue")][IgnoreCase]GLOBAL -> @"global";
+[Style("boldBlue")][IgnoreCase]END  	-> @"end";
+[Style("boldBlue")][IgnoreCase]RETURN	-> @"return";
+[Style("boldBlue")] ARROW  -> @"=>";
 
-[IgnoreCase]IF	-> @"if";
-[IgnoreCase]ELSE	-> @"else";
-[IgnoreCase]FOR	-> @"for";
-[IgnoreCase]TO 	-> @"to";
-[IgnoreCase]INCBY	-> @"incby";
-[IgnoreCase]WHILE	-> @"while";
-[IgnoreCase]DO	-> @"do";
+[Style("boldBlue")][IgnoreCase]IF	-> @"if";
+[Style("boldBlue")][IgnoreCase]ELSE	-> @"else";
+[Style("boldBlue")][IgnoreCase]FOR	-> @"for";
+[Style("boldBlue")][IgnoreCase]TO 	-> @"to";
+[Style("boldBlue")][IgnoreCase]INCBY	-> @"incby";
+[Style("boldBlue")][IgnoreCase]WHILE	-> @"while";
+[Style("boldBlue")][IgnoreCase]DO	-> @"do";
 
-[IgnoreCase]OR	-> @"or";
-[IgnoreCase]AND	-> @"and";
-[IgnoreCase]NOT	-> @"not"; 
-[IgnoreCase]OPER	-> @"write";
+[Style("bold")][IgnoreCase]OR	-> @"or";
+[Style("bold")][IgnoreCase]AND	-> @"and";
+[Style("bold")][IgnoreCase]NOT	-> @"not"; 
+[Style("boldBlue")][IgnoreCase]OPER	-> @"write";
 
-PLUSMINUS-> @"\+|-";
-MULTDIV	-> @"\*|/|\%|//";
-COMP	-> @"=|\!=|\<\=|\<|\>=|\>";
-POW	-> @"\^";
-UNARYOP -> @"\+\+|--|\+|-";
+[Style("bold")]PLUSMINUS-> @"\+|-";
+[Style("bold")]MULTDIV	-> @"\*|/|\%\%|\%/";
+[Style("bold")]COMP	-> @"=|\!=|\<\=|\<|\>=|\>";
+[Style("bold")]POW	-> @"\^";
+[Style("bold")]UNARYOP -> @"\+\+|--|\+|-";
 
-COLON	-> @":";
-QUESTION -> @"\?";
-COMMA	-> @",";
-ASSIGN	-> @"\=";
+[Style("bold")]COLON	-> @":";
+[Style("bold")]QUESTION -> @"\?";
+[Style("bold")]COMMA	-> @",";
+[Style("bold")]ASSIGN	-> @"\=";
 
-BROPEN		-> @"\(";
-BRCLOSE	-> @"\)";
-SQOPEN		-> @"\[";
-SQCLOSE	-> @"\]";
+[Style("bold")]BROPEN		-> @"\(";
+[Style("bold")]BRCLOSE	-> @"\)";
+[Style("bold")]SQOPEN		-> @"\[";
+[Style("bold")]SQCLOSE	-> @"\]";
 
-STRING		-> @"@?\""(\""\""|[^\""])*\"""; // Магия.
+[Style("string")]STRING		-> @"@?\""(\""\""|[^\""])*\"""; // Магия.
 INTEGER	-> @"[0-9]+";
 DOUBLE		-> @"[0-9]*\.[0-9]+";
 [IgnoreCase]BOOL-> @"true|false";
-[IgnoreCase]READFUNC-> @"readnum|readstr";
+[Style("boldBlue")][IgnoreCase]READFUNC-> @"readnum|readstr";
 
-[IgnoreCase]IDENTIFIER-> @"[a-zA-Z_][a-zA-Z0-9_]*(?<!(^)(end|else|do|while|for|true|false|return|to|incby|global|or|and|not))(?!\w)"; // Черная магия.
+[Style("fade")][IgnoreCase]IDENTIFIER-> @"[a-zA-Z_][a-zA-Z0-9_]*(?<!(^)(end|else|do|while|for|true|false|return|to|incby|global|or|and|not))(?!\w)"; // Черная магия.
 
 NEWLINE	-> @"\s+";
 EOF		-> @"^$";
@@ -54,8 +54,8 @@ EOF		-> @"^$";
 [Skip]
 WHITESPACE 	-> @"\s+";
 [Skip]
+[Style("comment")]
 COMMENT	-> @"//[^\n]*\n?";
- 
  
 // Базовые конструкции.
 Start		-> Program? EOF;
@@ -71,7 +71,7 @@ Statement	-> IfStm | WhileStm | DoStm | ForStm | ReturnStm | CallOrAssign | Oper
 IfStm 		-> IF Expr Statements (ELSE Statements)?;
 WhileStm 	-> WHILE Expr? Statements;
 DoStm 		-> DO Statements WHILE Expr;
-ForStm 	-> FOR CallOrAssign TO Expr (INCBY Expr)? Statements;
+ForStm 	-> FOR Variable Assign TO Expr (INCBY Expr)? Statements;
 ReturnStm	-> RETURN Expr?;
 OperStm	-> OPER Call?;
 

@@ -1,22 +1,17 @@
 ﻿namespace Language.AST.Statements
 {
-    using System.Windows.Forms;
+    using Semantic.AST.LeftExprSide;
+    using Semantic.ASTVisitor;
 
     public class CallOrAssign : StatementBase
     {
-        public Variable Variable { get; set; }
+        public LeftSideExprBase LeftSideExpr { get; set; }
 
         public ExpressionBase AssignExpression { get; set; }
-
-        public override TreeNode GetNodes()
+       
+        public override dynamic Accept(IAstVisitor visitor)
         {
-            var node = new TreeNode("CallOrAssign");
-            node.Nodes.Add(new TreeNode("Variable") {Nodes = { Variable.GetNodes() }});
-            if (AssignExpression != null)
-            {
-                node.Nodes.Add(new TreeNode("AssignExpr") { Nodes = { AssignExpression.GetNodes()}});
-            }
-            return node;
+            return visitor.Visit(this);
         }
     }
 }

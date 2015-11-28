@@ -8,20 +8,21 @@
     using AST;
 
     using Semantic;
+    using Semantic.ASTVisitor;
     using Semantic.Data;
 
     using TinyPG;
 
     public class SourceCodeHandler
     {
-        public SourceCodeHandler(RichTextBox source)
+        public SourceCodeHandler(string source)
         {
             var scanner = new Scanner();
             var parser = new Parser(scanner);
 
             //var highlighter = new TextHighlighter(source, scanner, parser);
 
-            var tree = parser.Parse(source.Text, "", new AstGenerationTree());
+            var tree = parser.Parse(source, "", new AstGenerationTree());
             PopulateSyntaxTree(tree.Nodes.First(), ParseTree);
             PopulateTokens(scanner);
 
@@ -32,6 +33,7 @@
                     tree.Eval();
                     var r = Namespaces.Root;
                     var p = AstCreator.GetProgram();
+                    p.Optimize();
                     ASTTree = p.GetNodes();
                     PopulateIdentifierTree(Namespaces.Root, IdentifierTree);
                 }
@@ -40,6 +42,8 @@
                     tree.Errors.Add(parseException.Error);
                 }
             }
+
+            Errors = tree.Errors;
 
             Status = $"Errors: {string.Join(Environment.NewLine, tree.Errors.Select(e => e.ToString()))}{Environment.NewLine}";
         }
@@ -63,6 +67,8 @@
                             return result;
                         }));
         }
+
+        public ParseErrors Errors { get; set; }
 
         public List<string> Tokens { get; private set; } = new List<string>();
 

@@ -1,25 +1,21 @@
 ﻿namespace Language.AST.Expressions
 {
-    using System.Windows.Forms;
-
+    using Semantic.ASTVisitor;
     using Semantic.Data;
 
     public class LiteralExpr : ExpressionBase
     {
         public SymbolType SymbolType { get; set; }
 
-        public string Value { get; set; }
+        public string Value => RawValue.ToString();
 
-        public override SymbolType GetExprType()
+        public dynamic RawValue { get; set; }
+
+        public override dynamic Accept(IAstVisitor visitor)
         {
-            return SymbolType;
+            return visitor.Visit(this);
         }
 
-        public override TreeNode GetNodes()
-        {
-            var node = base.GetNodes();
-            node.Text = Value;
-            return node;
-        }
+       
     }
 }

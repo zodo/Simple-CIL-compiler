@@ -1,16 +1,16 @@
 ﻿namespace Language.AST
 {
-    using System.Windows.Forms;
-
+    using Semantic.ASTVisitor;
     using Semantic.Data;
 
     public class GlobalVariable : AstBase
     {
-        public Symbol Value { get; set; }
+       public Symbol Value { get; set; }
 
-        public override TreeNode GetNodes()
+       
+       public override dynamic Accept(IAstVisitor visitor)
         {
-            return new TreeNode($"{Value.Type}:{Value.Name}");
+            return visitor.Visit(this);
         }
     }
 }

@@ -477,18 +477,6 @@ namespace TinyPG
         {
             switch (token.Type)
             {
-                    case TokenType.GLOBAL:
-                        sb.Append(@"{{\cf1 ");
-                        break;
-                    case TokenType.END:
-                        sb.Append(@"{{\cf2 ");
-                        break;
-                    case TokenType.RETURN:
-                        sb.Append(@"{{\cf3 ");
-                        break;
-                    case TokenType.ARROW:
-                        sb.Append(@"{{\cf4 ");
-                        break;
 
                 default:
                     sb.Append(@"{{\cf0 ");
@@ -499,7 +487,7 @@ namespace TinyPG
         // define the color palette to be used here
         private void AddRtfHeader(StringBuilder sb)
         {
-            sb.Insert(0, @"{\rtf1\ansi\deff0{\fonttbl{\f0\fnil\fcharset0 Consolas;}}{\colortbl;\red0\green0\blue255;\red0\green0\blue255;\red0\green0\blue255;\red0\green0\blue255;}\viewkind4\uc1\pard\lang1033\f0\fs20");
+            sb.Insert(0, @"{\rtf1\ansi\deff0{\fonttbl{\f0\fnil\fcharset0 Consolas;}}{\colortbl;}\viewkind4\uc1\pard\lang1033\f0\fs20");
         }
 
         private void AddRtfEnd(StringBuilder sb)

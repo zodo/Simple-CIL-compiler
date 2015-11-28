@@ -1,14 +1,17 @@
 ﻿namespace Language.AST.Statements
 {
-    using System.Windows.Forms;
+    using Semantic.AST;
+    using Semantic.ASTVisitor;
 
     public class OperStm : StatementBase
     {
         public string Operation { get; set; }
 
-        public override TreeNode GetNodes()
+        public Arguments Arguments { get; set; }
+       
+        public override dynamic Accept(IAstVisitor visitor)
         {
-            return new TreeNode(Operation);
+            return visitor.Visit(this);
         }
     }
 }

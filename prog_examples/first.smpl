@@ -1,28 +1,29 @@
 global i
 
 hell(ye)
-	raz()=2	
-	i = 4
+    raz()=2 
+    i = 4
 end
 
 global count = 34
 
 compare(val1, val2) 
-	if val1 = val2 	
-		return 0	
-	end	
-	if val1 < val2	
-		return -1	
-	end	
-	if val1 > val2	
-		return 1	
-	end	
+    if val1 = val2  
+        return 0    
+    end 
+    if val1 < val2  
+        return -1   
+    end 
+    if val1 > val2  
+        return 1    
+    end 
 end
+
 ff
-	i = "string"
-	local = compare("str1", "str2")
+    i = "string"
+    local = compare("str1", "str2")
 end
 
 main
-	ff()
+    ff()
 end

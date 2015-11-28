@@ -1,11 +1,8 @@
 ﻿namespace Language.AST.Statements
 {
-    using System.Windows.Forms;
-
     using Semantic;
+    using Semantic.ASTVisitor;
     using Semantic.Data;
-
-    using TinyPG;
 
     public class IfStm : StatementBase
     {
@@ -32,16 +29,10 @@
 
         public CodeBlock IfFalse { get; set; }
 
-        public override TreeNode GetNodes()
+        
+       public override dynamic Accept(IAstVisitor visitor)
         {
-            var node = new TreeNode("IfStatement");
-            node.Nodes.Add(new TreeNode("Condition") { Nodes = { Condition.GetNodes() } });
-            node.Nodes.Add(new TreeNode("IfTrueStatements") { Nodes = { IfTrue.GetNodes() } });
-            if (IfFalse != null)
-            {
-                node.Nodes.Add(new TreeNode("IfFalseStatements") { Nodes = { IfFalse.GetNodes() } });
-            }
-            return node;
+            return visitor.Visit(this);
         }
     }
 }

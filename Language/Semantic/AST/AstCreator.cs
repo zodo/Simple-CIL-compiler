@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Language.AST
+﻿namespace Language.AST
 {
+    using System.Collections.Generic;
+
     public static class AstCreator
     {
         public static List<GlobalVariable> GlobalVariables { get; private set; } = new List<GlobalVariable>();

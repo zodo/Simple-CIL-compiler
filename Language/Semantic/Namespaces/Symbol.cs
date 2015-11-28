@@ -4,22 +4,22 @@
 
     public class Symbol
     {
-        public Symbol(SymbolType type, string value, string name)
+        public Symbol(SymbolType type, string name)
         {
             Type = type;
-            Value = value;
             Name = name;
         }
 
+        public dynamic Value { get; set; }
+
         public SymbolType Type { get; set; }
 
-        private string Value { get; set; }
+        public SymbolType ArrayKeyType { get; set; }
 
-        public T GetValue<T>()
-        {
-            return (T)Convert.ChangeType(Value, typeof(T));
-        }
+        public SymbolType ArrayValueType { get; set; }
 
         public string Name { get; set; }
+
+        
     }
 }

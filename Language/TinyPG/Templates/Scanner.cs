@@ -4,7 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 using System.Xml.Serialization;
+using System.Drawing;
+
+using TinyPG;
 
 namespace <%Namespace%>
 {
@@ -20,6 +24,7 @@ namespace <%Namespace%>
         public int CurrentColumn;
         public int CurrentPosition;
         public List<Token> Skipped = new List<Token>(); // tokens that were skipped
+        public List<Token> SkippedGlobal = new List<Token>(); 
         public List<Token> RecognizedTokens 
         {
             get
@@ -168,6 +173,7 @@ namespace <%Namespace%>
                     currentline = tok.Line + (tok.Text.Length - tok.Text.Replace("\n", "").Length);
                     currentFile = tok.File;
                     Skipped.Add(tok);
+                    SkippedGlobal.Add(tok);
                 }
                 else
                 {
@@ -194,6 +200,11 @@ namespace <%Namespace%>
             LookAheadToken = tok;
             return tok;
         }
+
+        public static Dictionary<TokenType, string> Styles = new Dictionary<TokenType, string>
+        {
+        <%TokenStyles%>
+        };
     }
 
     #endregion
@@ -223,17 +234,21 @@ namespace <%Namespace%>
             set { file = value; }
         }
 
-        public int Line { 
-            get { return line; } 
+        public int Line
+        { 
+            get { return line != 10000?line:0; } 
             set { line = value; }
         }
-
-        public int Column {
-            get { return column; } 
+       
+        public int Column
+        {
+            get { return column != 10000?column:0; } 
             set { column = value; }
         }
 
-        public int StartPos { 
+       
+        public int StartPos
+        { 
             get { return startpos;} 
             set { startpos = value; }
         }
@@ -274,6 +289,8 @@ namespace <%Namespace%>
             Type = TokenType._UNDETERMINED_;
             startpos = start;
             endpos = end;
+            line = 10000;
+            column = 10000;
             Text = ""; // must initialize with empty string, may cause null reference exceptions otherwise
             Value = null;
         }
@@ -282,9 +299,9 @@ namespace <%Namespace%>
         {
             if (token.StartPos < startpos) startpos = token.StartPos;
             if (token.EndPos > endpos) endpos = token.EndPos;
-            if (token.Line > line) line = token.Line;
-            if (token.Column > column) column = token.Column;
-        }
+            if (token.Line < line) line = token.Line;
+            if (token.Column < column) column = token.Column;
+    }
 
         public override string ToString()
         {

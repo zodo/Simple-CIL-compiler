@@ -1,35 +1,13 @@
 ﻿namespace Language.AST.Expressions
 {
-    using System;
-    using System.Windows.Forms;
+    using Semantic.ASTVisitor;
 
-    using Semantic;
-    using Semantic.Data;
-
-    class TernaryExpr : ExpressionBase
+    public class TernaryExpr : ExpressionBase
     {
-        public override SymbolType GetExprType()
+        public override dynamic Accept(IAstVisitor visitor)
         {
-            if (FirstType != SymbolType.Bool)
-            {
-                throw new ParseException("Тип условия должен быть bool", Node);
-            }
-            if (Third == null)
-            {
-                return SecondType;
-            }
-            if (SecondType != Third.GetExprType())
-            {
-                throw new ParseException("Типы левой и правой части должны быть одинаковы", Node);
-            }
-            return SecondType;
+            return visitor.Visit(this);
         }
 
-        public override TreeNode GetNodes()
-        {
-            var node = base.GetNodes();
-            node.Text = "Ternary";
-            return node;
-        }
     }
 }

@@ -1,0 +1,17 @@
+func(o, d, t) => o+d+t
+    
+    
+    
+main
+    count = 0
+    while count < 50 
+        outstr = "lololo " + 50
+        write(outstr)
+    end
+    write("finish")
+    
+    local = func(1,2,func("str", "str", "str"))
+    locald = func(1, 2.1, 4.1)
+    locals = func(1, 2, "str")
+    return locals
+end

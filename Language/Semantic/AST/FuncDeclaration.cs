@@ -1,23 +1,17 @@
 ﻿namespace Language.AST
 {
     using System.Collections.Generic;
-    using System.Linq;
-    using System.Windows.Forms;
-
-    using TinyPG;
+    using Semantic.ASTVisitor;
 
     public class FuncDeclaration : AstBase
     {
-        public int ArgumentsAmount => Arguments.Count;
         public string Name { get; set; }
         
         public List<string> Arguments { get; set; }
-
-        public override TreeNode GetNodes()
+        
+        public override dynamic Accept(IAstVisitor visitor)
         {
-            var node = new TreeNode($"{Name} FuncDeclaration");
-            node.Nodes.Add(new TreeNode("Arguments") { Nodes = { new TreeNode(string.Join(", ", Arguments)) } });
-            return node;
+            return visitor.Visit(this);
         }
     }
 }

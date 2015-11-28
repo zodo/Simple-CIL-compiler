@@ -1,10 +1,11 @@
 ﻿namespace Language.AST.Statements
 {
-    using System.Windows.Forms;
+    using Semantic.AST.LeftExprSide;
+    using Semantic.ASTVisitor;
 
     public class ForStm : StatementBase
     {
-        public Variable Variable { get; set; }
+        public LeftSideExprVariable Variable { get; set; }
 
         public ExpressionBase AssignExpression { get; set; }
 
@@ -14,18 +15,10 @@
 
         public CodeBlock Statements { get; set; }
 
-        public override TreeNode GetNodes()
+        
+        public override dynamic Accept(IAstVisitor visitor)
         {
-            var node = new TreeNode("ForLoop");
-            node.Nodes.Add(new TreeNode("Variable") { Nodes = { Variable.GetNodes() } });
-            node.Nodes.Add(new TreeNode("AssignExpression") { Nodes = { AssignExpression.GetNodes() } });
-            node.Nodes.Add(new TreeNode("ToExpression") { Nodes = { ToExpression.GetNodes() } });
-            if (IncByExpression != null)
-            {
-                node.Nodes.Add(new TreeNode("IncByExpression") { Nodes = { IncByExpression.GetNodes() } });
-            }
-            node.Nodes.Add(new TreeNode("Statements") { Nodes = { Statements.GetNodes() } });
-            return node;
+            return visitor.Visit(this);
         }
     }
 }

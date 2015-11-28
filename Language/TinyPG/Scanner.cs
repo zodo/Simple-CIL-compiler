@@ -4,7 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 using System.Xml.Serialization;
+using System.Drawing;
+
+using TinyPG;
 
 namespace TinyPG
 {
@@ -20,6 +24,7 @@ namespace TinyPG
         public int CurrentColumn;
         public int CurrentPosition;
         public List<Token> Skipped = new List<Token>(); // tokens that were skipped
+        public List<Token> SkippedGlobal = new List<Token>(); 
         public List<Token> RecognizedTokens 
         {
             get
@@ -111,7 +116,7 @@ namespace TinyPG
             Patterns.Add(TokenType.PLUSMINUS, regex);
             Tokens.Add(TokenType.PLUSMINUS);
 
-            regex = new Regex(@"\*|/|\%|//", RegexOptions.Compiled);
+            regex = new Regex(@"\*|/|\%\%|\%/", RegexOptions.Compiled);
             Patterns.Add(TokenType.MULTDIV, regex);
             Tokens.Add(TokenType.MULTDIV);
 
@@ -322,6 +327,7 @@ namespace TinyPG
                     currentline = tok.Line + (tok.Text.Length - tok.Text.Replace("\n", "").Length);
                     currentFile = tok.File;
                     Skipped.Add(tok);
+                    SkippedGlobal.Add(tok);
                 }
                 else
                 {
@@ -348,6 +354,43 @@ namespace TinyPG
             LookAheadToken = tok;
             return tok;
         }
+
+        public static Dictionary<TokenType, string> Styles = new Dictionary<TokenType, string>
+        {
+        
+{TokenType.GLOBAL, "boldBlue"},
+{TokenType.END, "boldBlue"},
+{TokenType.RETURN, "boldBlue"},
+{TokenType.ARROW, "boldBlue"},
+{TokenType.IF, "boldBlue"},
+{TokenType.ELSE, "boldBlue"},
+{TokenType.FOR, "boldBlue"},
+{TokenType.TO, "boldBlue"},
+{TokenType.INCBY, "boldBlue"},
+{TokenType.WHILE, "boldBlue"},
+{TokenType.DO, "boldBlue"},
+{TokenType.OR, "bold"},
+{TokenType.AND, "bold"},
+{TokenType.NOT, "bold"},
+{TokenType.OPER, "boldBlue"},
+{TokenType.PLUSMINUS, "bold"},
+{TokenType.MULTDIV, "bold"},
+{TokenType.COMP, "bold"},
+{TokenType.POW, "bold"},
+{TokenType.UNARYOP, "bold"},
+{TokenType.COLON, "bold"},
+{TokenType.QUESTION, "bold"},
+{TokenType.COMMA, "bold"},
+{TokenType.ASSIGN, "bold"},
+{TokenType.BROPEN, "bold"},
+{TokenType.BRCLOSE, "bold"},
+{TokenType.SQOPEN, "bold"},
+{TokenType.SQCLOSE, "bold"},
+{TokenType.STRING, "string"},
+{TokenType.READFUNC, "boldBlue"},
+{TokenType.IDENTIFIER, "fade"},
+{TokenType.COMMENT, "comment"},
+        };
     }
 
     #endregion
@@ -453,17 +496,21 @@ namespace TinyPG
             set { file = value; }
         }
 
-        public int Line { 
-            get { return line; } 
+        public int Line
+        { 
+            get { return line != 10000?line:0; } 
             set { line = value; }
         }
-
-        public int Column {
-            get { return column; } 
+       
+        public int Column
+        {
+            get { return column != 10000?column:0; } 
             set { column = value; }
         }
 
-        public int StartPos { 
+       
+        public int StartPos
+        { 
             get { return startpos;} 
             set { startpos = value; }
         }
@@ -504,6 +551,8 @@ namespace TinyPG
             Type = TokenType._UNDETERMINED_;
             startpos = start;
             endpos = end;
+            line = 10000;
+            column = 10000;
             Text = ""; // must initialize with empty string, may cause null reference exceptions otherwise
             Value = null;
         }
@@ -512,9 +561,9 @@ namespace TinyPG
         {
             if (token.StartPos < startpos) startpos = token.StartPos;
             if (token.EndPos > endpos) endpos = token.EndPos;
-            if (token.Line > line) line = token.Line;
-            if (token.Column > column) column = token.Column;
-        }
+            if (token.Line < line) line = token.Line;
+            if (token.Column < column) column = token.Column;
+    }
 
         public override string ToString()
         {

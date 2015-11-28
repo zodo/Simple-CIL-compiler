@@ -1,19 +1,14 @@
 ﻿namespace Language.AST.Statements
 {
-    using System.Windows.Forms;
+    using Semantic.ASTVisitor;
 
     public class ReturnStm : StatementBase
     {
         public ExpressionBase ReturnExpression { get; set; }
-
-        public override TreeNode GetNodes()
+        
+        public override dynamic Accept(IAstVisitor visitor)
         {
-            var node = new TreeNode("ReturnStm");
-            if (ReturnExpression != null)
-            {
-                node.Nodes.Add(new TreeNode("ReturnExpr") { Nodes = { ReturnExpression.GetNodes() } });
-            }
-            return node;
+            return visitor.Visit(this);
         }
     }
 }

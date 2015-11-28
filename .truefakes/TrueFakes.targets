@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <!-- TrueFakes command paths -->
+    <TrueFakesExeName Condition=" '$(OS)' == 'Windows_NT' ">"$(TRUEFAKESDIR)TrueFakes.exe"</TrueFakesExeName>
+    <TrueFakesExeName Condition=" '$(OS)' != 'Windows_NT' ">mono --runtime=v4.0.30319 "$(TRUEFAKESDIR)TrueFakes.exe"</TrueFakesExeName>
+    <!-- Commands -->
+    <GenerateTrueFakesCommand>$(TrueFakesExeName) -g "$(SolutionPath)" "$(MSBuildProjectFullPath)" "$(Configuration)" "@(IntermediateAssembly)"</GenerateTrueFakesCommand>
+  </PropertyGroup>
+
+  <!--The following property group adds our custom post-target to the post compile call list -->
+  <PropertyGroup>
+    <TargetsTriggeredByCompilation>
+      $(TargetsTriggeredByCompilation);
+      TrueFakesInjectTarget
+    </TargetsTriggeredByCompilation>
+  </PropertyGroup>
+
+  <!--This target will be called by CoreCompile-->
+  <Target Name="TrueFakesInjectTarget">
+    <!--Do post-compilation processing here-->
+    <Exec Command="$(GenerateTrueFakesCommand)"/>
+  </Target>
+</Project>

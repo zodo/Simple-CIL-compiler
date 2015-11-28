@@ -30,11 +30,14 @@
         {
             this.splitContainerMain = new System.Windows.Forms.SplitContainer();
             this.splitContainerLeft = new System.Windows.Forms.SplitContainer();
-            this.textBoxProgram = new System.Windows.Forms.RichTextBox();
             this.textBoxStatus = new System.Windows.Forms.TextBox();
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.parseTreeView = new System.Windows.Forms.TreeView();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.ASTtreeView = new System.Windows.Forms.TreeView();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.IdentifierTreeView = new System.Windows.Forms.TreeView();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.parseTreeView = new System.Windows.Forms.TreeView();
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.fILEToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -47,25 +50,22 @@
             this.identifierTableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
-            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.ASTtreeView = new System.Windows.Forms.TreeView();
+            this.oPTIMIZATIONToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.expressionSimplifyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.unreacheableCodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.variablesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerMain)).BeginInit();
             this.splitContainerMain.Panel1.SuspendLayout();
             this.splitContainerMain.Panel2.SuspendLayout();
             this.splitContainerMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerLeft)).BeginInit();
-            this.splitContainerLeft.Panel1.SuspendLayout();
             this.splitContainerLeft.Panel2.SuspendLayout();
             this.splitContainerLeft.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
-            this.splitContainer1.Panel1.SuspendLayout();
-            this.splitContainer1.Panel2.SuspendLayout();
-            this.splitContainer1.SuspendLayout();
+            this.tabControl1.SuspendLayout();
+            this.tabPage1.SuspendLayout();
+            this.tabPage2.SuspendLayout();
+            this.tabPage3.SuspendLayout();
             this.menuStrip.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).BeginInit();
-            this.splitContainer2.Panel1.SuspendLayout();
-            this.splitContainer2.Panel2.SuspendLayout();
-            this.splitContainer2.SuspendLayout();
             this.SuspendLayout();
             // 
             // splitContainerMain
@@ -81,7 +81,7 @@
             // 
             // splitContainerMain.Panel2
             // 
-            this.splitContainerMain.Panel2.Controls.Add(this.splitContainer1);
+            this.splitContainerMain.Panel2.Controls.Add(this.tabControl1);
             this.splitContainerMain.Size = new System.Drawing.Size(1154, 654);
             this.splitContainerMain.SplitterDistance = 616;
             this.splitContainerMain.TabIndex = 0;
@@ -94,30 +94,12 @@
             this.splitContainerLeft.Name = "splitContainerLeft";
             this.splitContainerLeft.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
-            // splitContainerLeft.Panel1
-            // 
-            this.splitContainerLeft.Panel1.Controls.Add(this.textBoxProgram);
-            // 
             // splitContainerLeft.Panel2
             // 
             this.splitContainerLeft.Panel2.Controls.Add(this.textBoxStatus);
             this.splitContainerLeft.Size = new System.Drawing.Size(616, 654);
             this.splitContainerLeft.SplitterDistance = 503;
             this.splitContainerLeft.TabIndex = 0;
-            // 
-            // textBoxProgram
-            // 
-            this.textBoxProgram.AcceptsTab = true;
-            this.textBoxProgram.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBoxProgram.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-            this.textBoxProgram.HideSelection = false;
-            this.textBoxProgram.Location = new System.Drawing.Point(0, 0);
-            this.textBoxProgram.Name = "textBoxProgram";
-            this.textBoxProgram.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.textBoxProgram.Size = new System.Drawing.Size(614, 501);
-            this.textBoxProgram.TabIndex = 0;
-            this.textBoxProgram.Text = "";
-            this.textBoxProgram.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.textBoxProgram_PreviewKeyDown);
             // 
             // textBoxStatus
             // 
@@ -130,48 +112,85 @@
             this.textBoxStatus.Size = new System.Drawing.Size(614, 145);
             this.textBoxStatus.TabIndex = 0;
             // 
-            // splitContainer1
+            // tabControl1
             // 
-            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer1.Name = "splitContainer1";
-            this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Controls.Add(this.tabPage3);
+            this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl1.Location = new System.Drawing.Point(0, 0);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(532, 652);
+            this.tabControl1.TabIndex = 1;
             // 
-            // splitContainer1.Panel1
+            // tabPage1
             // 
-            this.splitContainer1.Panel1.Controls.Add(this.parseTreeView);
+            this.tabPage1.Controls.Add(this.ASTtreeView);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(524, 626);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "AST";
+            this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // splitContainer1.Panel2
+            // ASTtreeView
             // 
-            this.splitContainer1.Panel2.Controls.Add(this.splitContainer2);
-            this.splitContainer1.Size = new System.Drawing.Size(532, 652);
-            this.splitContainer1.SplitterDistance = 322;
-            this.splitContainer1.TabIndex = 1;
+            this.ASTtreeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ASTtreeView.Location = new System.Drawing.Point(3, 3);
+            this.ASTtreeView.Name = "ASTtreeView";
+            this.ASTtreeView.Size = new System.Drawing.Size(518, 620);
+            this.ASTtreeView.TabIndex = 0;
+            this.ASTtreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.ASTtreeView_AfterSelect);
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.Controls.Add(this.IdentifierTreeView);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(524, 626);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "Symbols";
+            this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // IdentifierTreeView
+            // 
+            this.IdentifierTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.IdentifierTreeView.Location = new System.Drawing.Point(3, 3);
+            this.IdentifierTreeView.Name = "IdentifierTreeView";
+            this.IdentifierTreeView.Size = new System.Drawing.Size(518, 620);
+            this.IdentifierTreeView.TabIndex = 0;
+            // 
+            // tabPage3
+            // 
+            this.tabPage3.Controls.Add(this.parseTreeView);
+            this.tabPage3.Location = new System.Drawing.Point(4, 22);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage3.Size = new System.Drawing.Size(524, 626);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "CST";
+            this.tabPage3.UseVisualStyleBackColor = true;
             // 
             // parseTreeView
             // 
             this.parseTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.parseTreeView.HideSelection = false;
-            this.parseTreeView.Location = new System.Drawing.Point(0, 0);
+            this.parseTreeView.Location = new System.Drawing.Point(3, 3);
             this.parseTreeView.Name = "parseTreeView";
-            this.parseTreeView.Size = new System.Drawing.Size(532, 322);
+            this.parseTreeView.Size = new System.Drawing.Size(518, 620);
             this.parseTreeView.TabIndex = 0;
             this.parseTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.parseTreeView_AfterSelect);
-            // 
-            // IdentifierTreeView
-            // 
-            this.IdentifierTreeView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.IdentifierTreeView.Location = new System.Drawing.Point(0, 0);
-            this.IdentifierTreeView.Name = "IdentifierTreeView";
-            this.IdentifierTreeView.Size = new System.Drawing.Size(532, 152);
-            this.IdentifierTreeView.TabIndex = 0;
             // 
             // menuStrip
             // 
             this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fILEToolStripMenuItem,
             this.rUNToolStripMenuItem,
-            this.mISCToolStripMenuItem});
+            this.mISCToolStripMenuItem,
+            this.oPTIMIZATIONToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
             this.menuStrip.Size = new System.Drawing.Size(1154, 24);
@@ -232,7 +251,7 @@
             // 
             this.runToolStripMenuItem1.Name = "runToolStripMenuItem1";
             this.runToolStripMenuItem1.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.runToolStripMenuItem1.Size = new System.Drawing.Size(114, 22);
+            this.runToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
             this.runToolStripMenuItem1.Text = "Run";
             this.runToolStripMenuItem1.Click += new System.EventHandler(this.runToolStripMenuItem1_Click);
             // 
@@ -256,31 +275,45 @@
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             // 
-            // splitContainer2
+            // oPTIMIZATIONToolStripMenuItem
             // 
-            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer2.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer2.Name = "splitContainer2";
-            this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            this.oPTIMIZATIONToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.expressionSimplifyToolStripMenuItem,
+            this.unreacheableCodeToolStripMenuItem,
+            this.variablesToolStripMenuItem});
+            this.oPTIMIZATIONToolStripMenuItem.Name = "oPTIMIZATIONToolStripMenuItem";
+            this.oPTIMIZATIONToolStripMenuItem.Size = new System.Drawing.Size(101, 20);
+            this.oPTIMIZATIONToolStripMenuItem.Text = "OPTIMIZATION";
             // 
-            // splitContainer2.Panel1
+            // expressionSimplifyToolStripMenuItem
             // 
-            this.splitContainer2.Panel1.Controls.Add(this.IdentifierTreeView);
+            this.expressionSimplifyToolStripMenuItem.Checked = true;
+            this.expressionSimplifyToolStripMenuItem.CheckOnClick = true;
+            this.expressionSimplifyToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.expressionSimplifyToolStripMenuItem.Name = "expressionSimplifyToolStripMenuItem";
+            this.expressionSimplifyToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.expressionSimplifyToolStripMenuItem.Text = "Expression simplify";
+            this.expressionSimplifyToolStripMenuItem.CheckedChanged += new System.EventHandler(this.expressionSimplifyToolStripMenuItem_CheckedChanged);
             // 
-            // splitContainer2.Panel2
+            // unreacheableCodeToolStripMenuItem
             // 
-            this.splitContainer2.Panel2.Controls.Add(this.ASTtreeView);
-            this.splitContainer2.Size = new System.Drawing.Size(532, 326);
-            this.splitContainer2.SplitterDistance = 152;
-            this.splitContainer2.TabIndex = 1;
+            this.unreacheableCodeToolStripMenuItem.Checked = true;
+            this.unreacheableCodeToolStripMenuItem.CheckOnClick = true;
+            this.unreacheableCodeToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.unreacheableCodeToolStripMenuItem.Name = "unreacheableCodeToolStripMenuItem";
+            this.unreacheableCodeToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.unreacheableCodeToolStripMenuItem.Text = "Unreacheable code";
+            this.unreacheableCodeToolStripMenuItem.CheckedChanged += new System.EventHandler(this.unreacheableCodeToolStripMenuItem_CheckedChanged);
             // 
-            // ASTtreeView
+            // variablesToolStripMenuItem
             // 
-            this.ASTtreeView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ASTtreeView.Location = new System.Drawing.Point(0, 0);
-            this.ASTtreeView.Name = "ASTtreeView";
-            this.ASTtreeView.Size = new System.Drawing.Size(532, 170);
-            this.ASTtreeView.TabIndex = 0;
+            this.variablesToolStripMenuItem.Checked = true;
+            this.variablesToolStripMenuItem.CheckOnClick = true;
+            this.variablesToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.variablesToolStripMenuItem.Name = "variablesToolStripMenuItem";
+            this.variablesToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.variablesToolStripMenuItem.Text = "Variables";
+            this.variablesToolStripMenuItem.CheckedChanged += new System.EventHandler(this.variablesToolStripMenuItem_CheckedChanged);
             // 
             // MainForm
             // 
@@ -295,21 +328,16 @@
             this.splitContainerMain.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerMain)).EndInit();
             this.splitContainerMain.ResumeLayout(false);
-            this.splitContainerLeft.Panel1.ResumeLayout(false);
             this.splitContainerLeft.Panel2.ResumeLayout(false);
             this.splitContainerLeft.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerLeft)).EndInit();
             this.splitContainerLeft.ResumeLayout(false);
-            this.splitContainer1.Panel1.ResumeLayout(false);
-            this.splitContainer1.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
-            this.splitContainer1.ResumeLayout(false);
+            this.tabControl1.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
+            this.tabPage2.ResumeLayout(false);
+            this.tabPage3.ResumeLayout(false);
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
-            this.splitContainer2.Panel1.ResumeLayout(false);
-            this.splitContainer2.Panel2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
-            this.splitContainer2.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -329,15 +357,20 @@
         private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem rUNToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem runToolStripMenuItem1;
-        private System.Windows.Forms.RichTextBox textBoxProgram;
         private System.Windows.Forms.ToolStripMenuItem mISCToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem identifierTableToolStripMenuItem;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
-        private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.TreeView IdentifierTreeView;
-        private System.Windows.Forms.SplitContainer splitContainer2;
         private System.Windows.Forms.TreeView ASTtreeView;
+        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.ToolStripMenuItem oPTIMIZATIONToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem expressionSimplifyToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem unreacheableCodeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem variablesToolStripMenuItem;
     }
 }
 

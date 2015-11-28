@@ -1,36 +1,21 @@
 ﻿namespace Language.AST.Expressions
 {
-    using System.Windows.Forms;
-
-    using Semantic;
-    using Semantic.Data;
+    using Semantic.ASTVisitor;
 
     public class AndOrExpr : ExpressionBase
     {
-        public override SymbolType GetExprType()
-        {
-            if (FirstType != SymbolType.Bool || SecondType != SymbolType.Bool)
-            {
-                throw new ParseException("Логические операции можно производить только над типом Bool", Node);
-
-            }
-            return SymbolType.Bool;
-        }
-
         public AndOrOperation Type { get; set; }
-
-        public override TreeNode GetNodes()
+       
+        public override dynamic Accept(IAstVisitor visitor)
         {
-            var node = base.GetNodes();
-            node.Text = Type.ToString();
-            return node;
+            return visitor.Visit(this);
         }
-
-
     }
+
     public enum AndOrOperation
     {
         Or,
+
         And
     }
 }
