@@ -1,0 +1,13 @@
+f
+    write(3)
+    write(4)
+    return true
+end
+    
+    
+main
+    write(123)
+    if f()
+        write(345)
+    end
+end

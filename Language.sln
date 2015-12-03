@@ -3,14 +3,18 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Language", "Language\Language.csproj", "{E2D926C0-999E-45E3-A722-561A88F5B636}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TinyPG", "..\TinyPG fork\TinyPG sources\TinyPG\TinyPG.csproj", "{423B1883-6B35-401B-BB70-B7167F847575}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".truefakes", ".truefakes", "{1C6FDD5D-D1DC-41B2-A5AC-EEC9E95B1402}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{FFC06658-FDF3-477D-9D99-523EBEBFB6C5}"
 	ProjectSection(SolutionItems) = preProject
-		.truefakes\TrueFakes.targets = .truefakes\TrueFakes.targets
+		Examples\controlFlow = Examples\controlFlow
+		Examples\first.smpl = Examples\first.smpl
+		Examples\optimization = Examples\optimization
+		Examples\second.smpl = Examples\second.smpl
+		Examples\third = Examples\third
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Language.Core", "Language.Core\Language.Core.csproj", "{E2D926C0-999E-45E3-A722-561A88F5B636}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Language.TinyPG", "Language.TinyPG\Language.TinyPG.csproj", "{423B1883-6B35-401B-BB70-B7167F847575}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

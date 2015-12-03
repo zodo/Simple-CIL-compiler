@@ -1,0 +1,23 @@
+main
+    x = 2 + 2 * 2
+    
+    y = x * x
+    
+    if 2 + 5 + y < 3
+        i = 1
+    end else
+        j = 2
+    end
+    
+    while 1 != 1 
+        k = 3
+    end
+    
+    do
+        l = 4
+    end while 1 != 1
+    
+    return 0
+    
+    t = 5
+end
