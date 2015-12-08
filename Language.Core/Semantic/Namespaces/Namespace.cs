@@ -14,14 +14,9 @@
 
         public Namespace(string name)
         {
-            Name = name;
+            Name = $"{name}";
         }
-
-        public Namespace()
-        {
-            Name = Guid.NewGuid().ToString();
-        }
-
+        
         public string Name { get; }
 
         public Namespace Owner

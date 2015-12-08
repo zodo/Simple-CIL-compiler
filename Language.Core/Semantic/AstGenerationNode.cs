@@ -128,7 +128,7 @@
                 }
                 var implementation = new FuncImplementation { Node = this, Name = "main" };
                 AstCreator.FuncImplementation.Push(implementation);
-                Namespaces.LevelDown(new Namespace(functionName));
+                Namespaces.LevelDown(new Namespace("main()"));
 
                 var codeblockNode = GetNode(TokenType.Statements);
                 if (codeblockNode == null)
@@ -191,7 +191,8 @@
         /// </summary>
         protected override object EvalStatements(ParseTree tree, params object[] paramlist)
         {
-            Namespaces.LevelDown(new Namespace());
+            var prev = this.Parent.Token.Type.ToString();
+            Namespaces.LevelDown(new Namespace(prev));
             var statements = new CodeBlock
             {
                 Statements = nodes.OfTokenType(TokenType.Statement).Select(x => x.Eval(tree)).Cast<StatementBase>().ToList(),
@@ -263,20 +264,32 @@
         }
 
         /// <summary>
-        /// Rule: ForStm -> FOR Variable Assign TO Expr (INCBY Expr )? Statements ;
+        /// Rule: ForStm -> FOR CallOrAssign TO Expr (INCBY Expr )? Statements ;
         /// </summary>
         protected override object EvalForStm(ParseTree tree, params object[] paramlist)
         {
+            Namespaces.LevelDown(new Namespace("for loop"));
+            var callOrAssign = (CallOrAssign)GetNode(TokenType.CallOrAssign).Eval(tree);
+            if (callOrAssign.LeftSideExpr.Type == LeftSideExprType.Call || callOrAssign.LeftSideExpr.Type == LeftSideExprType.Array)
+            {
+                throw new ParseException("В циклах for разрешается использовать только переменнные", callOrAssign.Node);
+            }
             var forStm = new ForStm
             {
-                Variable = (LeftSideExprVariable)GetNode(TokenType.Variable).Eval(tree, true),
-                AssignExpression = (ExpressionBase)GetNode(TokenType.Assign).Eval(tree),
+                Variable = (LeftSideExprVariable)callOrAssign.LeftSideExpr,
+                AssignExpression = callOrAssign.AssignExpression,
                 ToExpression = (ExpressionBase)nodes.OfTokenType(TokenType.Expr).First().Eval(tree),
                 IncByExpression = nodes.OfTokenType(TokenType.Expr).Count() > 1 ? (ExpressionBase)nodes.OfTokenType(TokenType.Expr).Last().Eval(tree) : null,
                 Statements = (CodeBlock)GetNode(TokenType.Statements).Eval(tree),
                 Node = this
             };
-            return forStm;
+            Namespaces.LevelUp();
+            if (forStm.AssignExpression.GetExprType() == forStm.ToExpression.GetExprType() && (forStm.IncByExpression == null || forStm.IncByExpression.GetExprType() == forStm.AssignExpression.GetExprType()))
+            {
+                return forStm;
+            }
+            throw new ParseException("Несовместимые типы", forStm.Node);
+            
         }
 
         /// <summary>
@@ -491,7 +504,7 @@
 
                     var currentNamespace = Namespaces.Current;
                     Namespaces.Current = Namespaces.Root;
-                    Namespaces.LevelDown(new Namespace($"{name} {string.Join(", ", argumentsTypes)}"));
+                    Namespaces.LevelDown(new Namespace($"{name}({string.Join(", ", argumentsTypes)})"));
 
                     for (var index = 0; index < arguments.Values.Count; index++)
                     {

@@ -1,0 +1,8 @@
+main
+
+    for j = 5 to 30 incby 5
+        write(j)
+    end
+    
+    
+end

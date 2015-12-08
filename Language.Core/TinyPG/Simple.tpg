@@ -69,7 +69,7 @@ Statement	-> IfStm | WhileStm | DoStm | ForStm | ReturnStm | CallOrAssign | Oper
 IfStm 		-> IF Expr Statements (ELSE Statements)?;
 WhileStm 	-> WHILE Expr? Statements;
 DoStm 		-> DO Statements WHILE Expr;
-ForStm 	-> FOR Variable Assign TO Expr (INCBY Expr)? Statements;
+ForStm 	-> FOR CallOrAssign TO Expr (INCBY Expr)? Statements;
 ReturnStm	-> RETURN Expr;
 OperStm	-> OPER Call?;
 

@@ -562,10 +562,7 @@ namespace TinyPG
             }
 
              // Concat Rule
-            ParseVariable(node); // NonTerminal Rule: Variable
-
-             // Concat Rule
-            ParseAssign(node); // NonTerminal Rule: Assign
+            ParseCallOrAssign(node); // NonTerminal Rule: CallOrAssign
 
              // Concat Rule
             tok = scanner.Scan(TokenType.TO); // Terminal Rule: TO

@@ -89,6 +89,10 @@
             foreach (var literal in namespc.SymbolsSameLevel)
             {
                 var literalNode = new TreeNode($"{literal.Type} : {literal.Name}");
+                if (literal.Type == SymbolType.Array)
+                {
+                    literalNode = new TreeNode($"{literal.ArrayValueType}[{literal.ArrayKeyType}] : {literal.Name}");
+                }
                 singleNode.Nodes.Add(literalNode);
             }
 

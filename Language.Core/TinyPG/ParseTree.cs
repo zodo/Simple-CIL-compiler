@@ -443,7 +443,7 @@ namespace TinyPG
         }
 
         /// <summary>
-        /// Rule: ForStm -> FOR Variable Assign TO Expr (INCBY Expr )? Statements ;
+        /// Rule: ForStm -> FOR CallOrAssign TO Expr (INCBY Expr )? Statements ;
         /// </summary>
         protected virtual object EvalForStm(ParseTree tree, params object[] paramlist)
         {

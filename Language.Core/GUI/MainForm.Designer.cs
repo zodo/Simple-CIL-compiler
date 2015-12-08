@@ -48,12 +48,13 @@
             this.runToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.mISCToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.identifierTableToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             this.oPTIMIZATIONToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.expressionSimplifyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.unreacheableCodeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.variablesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.loopExpansionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerMain)).BeginInit();
             this.splitContainerMain.Panel1.SuspendLayout();
             this.splitContainerMain.Panel2.SuspendLayout();
@@ -251,7 +252,7 @@
             // 
             this.runToolStripMenuItem1.Name = "runToolStripMenuItem1";
             this.runToolStripMenuItem1.ShortcutKeys = System.Windows.Forms.Keys.F5;
-            this.runToolStripMenuItem1.Size = new System.Drawing.Size(152, 22);
+            this.runToolStripMenuItem1.Size = new System.Drawing.Size(114, 22);
             this.runToolStripMenuItem1.Text = "Run";
             this.runToolStripMenuItem1.Click += new System.EventHandler(this.runToolStripMenuItem1_Click);
             // 
@@ -271,16 +272,13 @@
             this.identifierTableToolStripMenuItem.Text = "Identifier table";
             this.identifierTableToolStripMenuItem.Click += new System.EventHandler(this.identifierTableToolStripMenuItem_Click);
             // 
-            // openFileDialog1
-            // 
-            this.openFileDialog1.FileName = "openFileDialog1";
-            // 
             // oPTIMIZATIONToolStripMenuItem
             // 
             this.oPTIMIZATIONToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.expressionSimplifyToolStripMenuItem,
             this.unreacheableCodeToolStripMenuItem,
-            this.variablesToolStripMenuItem});
+            this.variablesToolStripMenuItem,
+            this.loopExpansionToolStripMenuItem});
             this.oPTIMIZATIONToolStripMenuItem.Name = "oPTIMIZATIONToolStripMenuItem";
             this.oPTIMIZATIONToolStripMenuItem.Size = new System.Drawing.Size(101, 20);
             this.oPTIMIZATIONToolStripMenuItem.Text = "OPTIMIZATION";
@@ -314,6 +312,20 @@
             this.variablesToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
             this.variablesToolStripMenuItem.Text = "Variables";
             this.variablesToolStripMenuItem.CheckedChanged += new System.EventHandler(this.variablesToolStripMenuItem_CheckedChanged);
+            // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.FileName = "openFileDialog1";
+            // 
+            // loopExpansionToolStripMenuItem
+            // 
+            this.loopExpansionToolStripMenuItem.Checked = true;
+            this.loopExpansionToolStripMenuItem.CheckOnClick = true;
+            this.loopExpansionToolStripMenuItem.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.loopExpansionToolStripMenuItem.Name = "loopExpansionToolStripMenuItem";
+            this.loopExpansionToolStripMenuItem.Size = new System.Drawing.Size(175, 22);
+            this.loopExpansionToolStripMenuItem.Text = "Loop expansion";
+            this.loopExpansionToolStripMenuItem.CheckedChanged += new System.EventHandler(this.loopExpansionToolStripMenuItem_CheckedChanged);
             // 
             // MainForm
             // 
@@ -371,6 +383,7 @@
         private System.Windows.Forms.ToolStripMenuItem expressionSimplifyToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem unreacheableCodeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem variablesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loopExpansionToolStripMenuItem;
     }
 }
 

@@ -236,5 +236,10 @@ namespace Language
         {
             OptimizeMode.Variables = variablesToolStripMenuItem.Checked;
         }
+
+        private void loopExpansionToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+        {
+            OptimizeMode.LoopExpansion = loopExpansionToolStripMenuItem.Checked;
+        }
     }
 }

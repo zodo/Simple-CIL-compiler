@@ -349,8 +349,127 @@
 
         public dynamic Visit(ForStm stm)
         {
+            stm.AssignExpression = Visit(stm.AssignExpression);
+            stm.Statements = Visit(stm.Statements);
+            stm.ToExpression = Visit(stm.ToExpression);
+            if (stm.IncByExpression != null)
+            {
+                stm.IncByExpression = Visit(stm.IncByExpression);
+            }
 
-            return stm;
+            stm.Variable = Visit(stm.Variable);
+            if (OptimizeMode.LoopExpansion)
+            {
+                var assignExpr = stm.AssignExpression as LiteralExpr;
+                var toExpr = stm.ToExpression as LiteralExpr;
+                if (toExpr != null && assignExpr != null && assignExpr.GetExprType() == SymbolType.Integer)
+                {
+                    int startValue = assignExpr.Value;
+                    int toValue = toExpr.Value;
+                    int incByValue = ((LiteralExpr)stm.IncByExpression)?.Value ?? 1;
+
+                    var steps = (toValue - startValue) / incByValue;
+                    if (steps >= 0 && steps < OptimizeMode.LoopExpansionRepeatLimit)
+                    {
+                        var block = new CodeBlock {Namespace = stm.Namespace, Node = stm.Node, Statements = new List<StatementBase>()};
+                        for (var i = startValue; i <= toValue; i+=incByValue)
+                        {
+                            var assig = Visit(new CallOrAssign
+                            {
+                                Namespace = stm.AssignExpression.Namespace,
+                                Node = stm.AssignExpression.Node,
+                                AssignExpression = new LiteralExpr {Namespace = stm.Namespace, SymbolType = stm.Variable.VariableType, Value = i},
+                                LeftSideExpr = new LeftSideExprVariable
+                                {
+                                    Name = stm.Variable.Name,
+                                    Namespace = stm.Variable.Namespace,
+                                    Type = LeftSideExprType.Variable,
+                                    VariableType = stm.Variable.VariableType
+                                }
+                            });
+                            block.Statements.Add(assig);
+                            block.Statements.AddRange(Visit(stm.Statements).Statements);
+                        }
+                        return block;
+                    }
+                }
+            }
+
+            var assign = new CallOrAssign
+            {
+                Namespace = stm.AssignExpression.Namespace,
+                Node = stm.AssignExpression.Node,
+                AssignExpression = stm.AssignExpression,
+                LeftSideExpr = new LeftSideExprVariable
+                {
+                    Name = stm.Variable.Name,
+                    Namespace = stm.Variable.Namespace,
+                    Type = LeftSideExprType.Variable,
+                    VariableType = stm.Variable.VariableType
+                }
+            };
+
+            var loopBody = new CodeBlock
+            {
+                Namespace = stm.Namespace,
+                Node = stm.Node,
+                Statements = new List<StatementBase>
+                {
+                    stm.Statements,
+                    new CallOrAssign
+                    {
+                        Namespace = stm.AssignExpression.Namespace,
+                        Node = stm.AssignExpression.Node,
+                        AssignExpression = Visit(new AddExpr
+                        {
+                            First = new GetVariableExpr
+                            {
+                                Name = assign.LeftSideExpr.Name, Type = stm.Variable.VariableType
+                            },
+                            Second = stm.IncByExpression??new LiteralExpr
+                            {
+                                SymbolType = SymbolType.Integer,
+                                Value = 1
+                            },
+                            OperationText = "+",
+                            Namespace = stm.Namespace
+
+                        }),
+                        LeftSideExpr = new LeftSideExprVariable
+                        {
+                            Name = stm.Variable.Name,
+                            Namespace = stm.Variable.Namespace,
+                            Type = LeftSideExprType.Variable,
+                            VariableType = stm.Variable.VariableType
+                        }
+
+                    }
+                }
+            };
+
+            var loop = new DoWhileStm
+            {
+                Namespace = stm.Namespace,
+                Condition = Visit(new CompareExpr
+                {
+                    First = Visit(new GetVariableExpr { Name = assign.LeftSideExpr.Name, Type = stm.Variable.VariableType}),
+                    OperationText = "<=",
+                    Second = stm.ToExpression
+                }),
+                Statements = loopBody,
+                Type = LoopType.While
+            };
+
+            var outerBlock = new CodeBlock
+            {
+                Statements = new List<StatementBase>(),
+                Namespace = stm.Namespace
+            };
+
+            outerBlock.Statements.Add(assign);
+            outerBlock.Statements.Add(loop);
+            
+            return outerBlock;
         }
 
         public dynamic Visit(IfStm stm)
