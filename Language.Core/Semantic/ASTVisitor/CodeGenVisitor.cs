@@ -1,6 +1,7 @@
 ﻿namespace Language.Semantic.ASTVisitor
 {
     using System;
+    using System.Collections;
     using System.Linq;
     using System.Security.Cryptography.X509Certificates;
     using System.Security.Policy;
@@ -15,6 +16,8 @@
     using Language.AST.Expressions;
     using Language.AST.Statements;
     using TriAxis.RunSharp;
+
+    using TryAxis.RunSharp;
 
     public class CodeGenVisitor : IAstVisitor
     {
@@ -136,7 +139,10 @@
 
         public dynamic Visit(GetArrayExpr expr)
         {
-            throw new System.NotImplementedException();
+            var symbol = expr.Namespace.Symbols.SingleOrDefault(x => x.Name == expr.Name);
+            var val = ((ContextualOperand)symbol.CodeGenField)[Visit((dynamic)expr.Index)];
+
+            return val;
         }
 
         public dynamic Visit(GetVariableExpr expr)
@@ -212,9 +218,26 @@
                 return null;
             }
 
-            string name = Visit((dynamic)stm.LeftSideExpr).Name;
-
+            string name = stm.LeftSideExpr.Name;
+            
             var symbol = stm.Namespace.Symbols.SingleOrDefault(x => x.Name == name);
+            if (symbol.Type == SymbolType.Array)
+            {
+                var left = stm.LeftSideExpr as LeftSideExprArray;
+                
+                if (ReferenceEquals(symbol.CodeGenField, null))
+                {
+                    var dict = _codeGen.Local(_currentMethod.ExpressionFactory.New(typeof(Hashtable)));
+                    symbol.CodeGenField = dict;
+                    _codeGen.Assign(dict[Visit((dynamic)left.Index)], Visit((dynamic)stm.AssignExpression));
+                }
+                else
+                {
+                    _codeGen.Assign(((ContextualOperand)symbol.CodeGenField)[Visit((dynamic)left.Index)], Visit((dynamic)stm.AssignExpression));
+                }
+                return null;
+            }
+            
             if (ReferenceEquals(symbol.CodeGenField, null))
             {
                 symbol.CodeGenField = _codeGen.Local(Visit((dynamic)stm.AssignExpression));
@@ -369,7 +392,7 @@
 
         public dynamic Visit(LeftSideExprArray left)
         {
-            throw new System.NotImplementedException();
+            return new { left.Name };
         }
 
         public dynamic Visit(LeftSideExprBase left)
