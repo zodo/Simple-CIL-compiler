@@ -1,0 +1,17 @@
+
+
+main
+    for i = 1 to 1000
+        count = 0
+        for j = 1 to i
+            if i %% j = 0
+            count = count + 1
+            end
+        end
+        //write(count)
+        if count <= 2
+            write(i)
+        end
+    end
+    
+end

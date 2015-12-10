@@ -1,0 +1,16 @@
+compare(one, two) => one > two
+    
+main
+    write("Введите два числа")
+    first = readnum
+    second = readnum
+    if compare(first, second)
+        write("Первое")
+    end
+    else
+        write("Второе")
+    end
+    
+    
+    
+end

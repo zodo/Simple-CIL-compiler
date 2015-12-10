@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{22F1C9B0-C9B6-49D1-9AED-7AB0063C3FB9}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Language.RunSharp</RootNamespace>
+    <AssemblyName>Language.RunSharp</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Aqla\AttributeMap.cs" />
+    <Compile Include="Aqla\CompilerOptions.cs" />
+    <Compile Include="Aqla\ContextualAssignment.cs" />
+    <Compile Include="Aqla\ContextualOperand.cs" />
+    <Compile Include="Aqla\Helpers.cs" />
+    <Compile Include="Aqla\ITypeMapper.cs" />
+    <Compile Include="Aqla\MemberGenBase.cs" />
+    <Compile Include="Aqla\TypeMapper.cs" />
+    <Compile Include="ArrayUtils.cs" />
+    <Compile Include="AssemblyGen.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="AttributeGen.cs" />
+    <Compile Include="BranchSet.cs" />
+    <Compile Include="CodeGen.cs" />
+    <Compile Include="CodeGen.Helpers.cs" />
+    <Compile Include="CodeGen.Statements.cs" />
+    <Compile Include="ConstructorGen.cs" />
+    <Compile Include="Conversion.cs" />
+    <Compile Include="DelegateGen.cs" />
+    <Compile Include="DynamicMethodGen.cs" />
+    <Compile Include="EventGen.cs" />
+    <Compile Include="ExpressionFactory.cs" />
+    <Compile Include="FieldGen.cs" />
+    <Compile Include="ITypeInfo.cs" />
+    <Compile Include="MethodGen.cs" />
+    <Compile Include="Operand.cs" />
+    <Compile Include="Operands\ArrayAccess.cs" />
+    <Compile Include="Operands\ArrayLength.cs" />
+    <Compile Include="Operands\Assignment.cs" />
+    <Compile Include="Operands\Cast.cs" />
+    <Compile Include="Operands\Conditional.cs" />
+    <Compile Include="Operands\DecimalLiteral.cs" />
+    <Compile Include="Operands\DoubleLiteral.cs" />
+    <Compile Include="Operands\EnumLiteral.cs" />
+    <Compile Include="Operands\Field.cs" />
+    <Compile Include="Operands\FloatLiteral.cs" />
+    <Compile Include="Operands\IAssignment.cs" />
+    <Compile Include="Operands\IAssignmentInternal.cs" />
+    <Compile Include="Operands\InitializedArray.cs" />
+    <Compile Include="Operands\IntLiteral.cs" />
+    <Compile Include="Operands\Invocation.cs" />
+    <Compile Include="Operands\LongLiteral.cs" />
+    <Compile Include="Operands\NewArray.cs" />
+    <Compile Include="Operands\NewDelegate.cs" />
+    <Compile Include="Operands\NewObject.cs" />
+    <Compile Include="Operands\OverloadableOperation.cs" />
+    <Compile Include="Operands\PostfixOperation.cs" />
+    <Compile Include="Operands\PrefixOperation.cs" />
+    <Compile Include="Operands\Property.cs" />
+    <Compile Include="Operands\SimpleOperation.cs" />
+    <Compile Include="Operands\StringLiteral.cs" />
+    <Compile Include="Operands\TypeLiteral.cs" />
+    <Compile Include="Operator.cs" />
+    <Compile Include="OverloadResolver.cs" />
+    <Compile Include="ParameterGen.cs" />
+    <Compile Include="Properties\Messages1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Messages.resx</DependentUpon>
+    </Compile>
+    <Compile Include="PropertyGen.cs" />
+    <Compile Include="RoutineGen.cs" />
+    <Compile Include="SignatureGen.cs" />
+    <Compile Include="StaticFactory.cs" />
+    <Compile Include="TypeGen.cs" />
+    <Compile Include="TypeInfo.cs" />
+    <Compile Include="Utils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Messages.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Messages1.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

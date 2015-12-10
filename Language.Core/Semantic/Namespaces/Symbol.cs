@@ -1,5 +1,9 @@
 ﻿namespace Language.Semantic.Data
 {
+    using System;
+
+    using TriAxis.RunSharp;
+
     public class Symbol
     {
         public Symbol(SymbolType type, string name)
@@ -20,6 +24,6 @@
 
         public int UsagesCount { get; set; }
 
-        
+        public Operand CodeGenField { get; set; }
     }
 }

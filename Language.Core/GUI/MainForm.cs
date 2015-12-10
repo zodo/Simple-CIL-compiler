@@ -4,6 +4,7 @@ using System.Windows.Forms;
 namespace Language
 {
     using System.Collections.Generic;
+    using System.Diagnostics;
     using System.Drawing;
     using System.IO;
     using System.Linq;
@@ -27,6 +28,8 @@ namespace Language
         private List<Token> _tokens;
 
         private ParseErrors _errors;
+
+        private bool _generateAssembly = true;
 
         public MainForm()
         {
@@ -111,7 +114,7 @@ namespace Language
 
         private void runToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            handler = new SourceCodeHandler(TextBox.Text);
+            handler = new SourceCodeHandler(TextBox.Text, _generateAssembly);
             parseTreeView.Nodes.Clear();
             parseTreeView.Nodes.Add(handler.ParseTree.FirstNode);
             parseTreeView.ExpandAll();
@@ -240,6 +243,24 @@ namespace Language
         private void loopExpansionToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
         {
             OptimizeMode.LoopExpansion = loopExpansionToolStripMenuItem.Checked;
+        }
+
+        private void runToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Process.Start("output.exe");
+            }
+            catch (Exception ee)
+            {
+                MessageBox.Show("Something strange happened " + ee.Message);
+            }
+            
+        }
+
+        private void generateAssemblyToolStripMenuItem_CheckedChanged(object sender, EventArgs e)
+        {
+            _generateAssembly = generateAssemblyToolStripMenuItem.Checked;
         }
     }
 }

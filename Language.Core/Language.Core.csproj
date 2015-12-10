@@ -54,6 +54,7 @@
     <Compile Include="GUI\ColorScheme.cs" />
     <Compile Include="GUI\SyntaxHiglightNode.cs" />
     <Compile Include="GUI\SyntaxHiglightParseTree.cs" />
+    <Compile Include="Semantic\ASTVisitor\CodeGenVisitor.cs" />
     <Compile Include="Semantic\ASTVisitor\ControlFlowVisitor.cs" />
     <Compile Include="Semantic\ASTVisitor\Interfaces\IBaseVisitor.cs" />
     <Compile Include="Semantic\ASTVisitor\Interfaces\ILeftExprVisitor.cs" />
@@ -148,7 +149,12 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Language.RunSharp\Language.RunSharp.csproj">
+      <Project>{22f1c9b0-c9b6-49d1-9aed-7ab0063c3fb9}</Project>
+      <Name>Language.RunSharp</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>"$(SolutionDir)Language.TinyPG\bin\Debug\TinyPG.exe" "$(ProjectDir)TinyPG\Simple.tpg"</PreBuildEvent>

@@ -7,7 +7,7 @@
     {
         public SymbolType SymbolType { get; set; }
 
-        public string StrValue => Value.ToString();
+        public string StrValue => Value?.ToString() ?? "";
 
         public dynamic Value { get; set; }
 

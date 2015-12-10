@@ -5,8 +5,9 @@ func(o, d, t) => o+d+t
 main
     count = 0
     while count < 50 
-        outstr = "lololo " + 50
+        outstr = "lololo " + count
         write(outstr)
+        count = count + 1
     end
     write("finish")
     

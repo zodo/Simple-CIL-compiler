@@ -83,14 +83,19 @@
             
             var literalNode = GetNode(TokenType.Literal);
 
-            var symbolType = ((LiteralExpr)literalNode?.Eval(tree))?.SymbolType ?? SymbolType.Unknown;
+            var literal = (LiteralExpr)literalNode?.Eval(tree);
 
-            var symbol = new Symbol(symbolType, identNode.Token.Text);
+            var symbolType = literal?.SymbolType ?? SymbolType.Unknown;
+
+            var symbol = new Symbol(symbolType, identNode.Token.Text)
+            {
+                Value = literal?.Value
+            };
 
             AstCreator.GlobalVariables.Add(new GlobalVariable
             {
                 Value = symbol,
-                Node = this
+                Node = this,
             });
             Namespaces.Current.AddSymbol(symbol, identNode);
 
@@ -126,7 +131,7 @@
                 {
                     throw new ParseException("Повторное обявление main", GetNode(TokenType.IDENTIFIER));
                 }
-                var implementation = new FuncImplementation { Node = this, Name = "main" };
+                var implementation = new FuncImplementation { Node = this, Name = "main", Declaration = AstCreator.FuncDeclarations.SingleOrDefault(x => x.Name == "main")};
                 AstCreator.FuncImplementation.Push(implementation);
                 Namespaces.LevelDown(new Namespace("main()"));
 
@@ -137,7 +142,7 @@
                 }
                 var stms = (CodeBlock)codeblockNode.Eval(tree);
                 implementation.Code = stms;
-
+                implementation.Namespace = Namespaces.Current;
                 Namespaces.LevelUp();
                 AstCreator.FuncImplementations.Add(AstCreator.FuncImplementation.Pop());
 
@@ -499,7 +504,7 @@
                 var funcImplementation = AstCreator.FuncImplementations.SingleOrDefault(x => x.Name == name && x.ArgumentsTypes.SequenceEqual(argumentsTypes));
                 if (funcImplementation == null)
                 {
-                    funcImplementation = new FuncImplementation { Name = name, Node = this, ArgumentsTypes = argumentsTypes};
+                    funcImplementation = new FuncImplementation { Name = name, Node = this, ArgumentsTypes = argumentsTypes, Declaration = funcDeclaration};
                     AstCreator.FuncImplementation.Push(funcImplementation);
 
                     var currentNamespace = Namespaces.Current;
@@ -514,7 +519,7 @@
                     }
 
                     funcDeclaration.Node.Eval(tree, true, this);
-
+                    funcImplementation.Namespace = Namespaces.Current;
                     Namespaces.Current = currentNamespace;
                     AstCreator.FuncImplementations.Add(AstCreator.FuncImplementation.Pop());
                 }

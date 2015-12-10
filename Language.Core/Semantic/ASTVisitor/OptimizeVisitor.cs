@@ -269,6 +269,20 @@
         public dynamic Visit(FuncImplementation impl)
         {
             impl.Code?.Optimize();
+            //if (impl.Code != null && !(impl.Code.Statements.LastOrDefault() is ReturnStm))
+            //{
+            //    var retType = impl.ReturnType;
+            //    impl.Code.Statements.Add(new ReturnStm
+            //    {
+            //        Namespace = impl.Namespace,
+            //        ReturnExpression = new LiteralExpr
+            //        {
+            //            Namespace = impl.Namespace,
+            //            Value = retType.CodeGenType() == typeof(void)? null: GetDefault(retType.CodeGenType()) ?? "",
+            //            SymbolType = retType
+            //        }
+            //    });
+            //}
             impl.ReturnExpression?.Optimize();
             return null;
         }
@@ -356,7 +370,8 @@
             {
                 stm.IncByExpression = Visit(stm.IncByExpression);
             }
-
+            var strNamespace = Namespaces.Current;
+            Namespaces.Current = stm.Namespace;
             stm.Variable = Visit(stm.Variable);
             if (OptimizeMode.LoopExpansion)
             {
@@ -366,7 +381,7 @@
                 {
                     int startValue = assignExpr.Value;
                     int toValue = toExpr.Value;
-                    int incByValue = ((LiteralExpr)stm.IncByExpression)?.Value ?? 1;
+                    int incByValue = ((LiteralExpr)Visit((dynamic)stm.IncByExpression))?.Value ?? 1;
 
                     var steps = (toValue - startValue) / incByValue;
                     if (steps >= 0 && steps < OptimizeMode.LoopExpansionRepeatLimit)
@@ -390,6 +405,7 @@
                             block.Statements.Add(assig);
                             block.Statements.AddRange(Visit(stm.Statements).Statements);
                         }
+                        Namespaces.Current = strNamespace;
                         return block;
                     }
                 }
@@ -397,13 +413,13 @@
 
             var assign = new CallOrAssign
             {
-                Namespace = stm.AssignExpression.Namespace,
+                Namespace = stm.Namespace,
                 Node = stm.AssignExpression.Node,
                 AssignExpression = stm.AssignExpression,
                 LeftSideExpr = new LeftSideExprVariable
                 {
                     Name = stm.Variable.Name,
-                    Namespace = stm.Variable.Namespace,
+                    Namespace = stm.Namespace,
                     Type = LeftSideExprType.Variable,
                     VariableType = stm.Variable.VariableType
                 }
@@ -418,7 +434,7 @@
                     stm.Statements,
                     new CallOrAssign
                     {
-                        Namespace = stm.AssignExpression.Namespace,
+                        Namespace = stm.Namespace,
                         Node = stm.AssignExpression.Node,
                         AssignExpression = Visit(new AddExpr
                         {
@@ -438,7 +454,7 @@
                         LeftSideExpr = new LeftSideExprVariable
                         {
                             Name = stm.Variable.Name,
-                            Namespace = stm.Variable.Namespace,
+                            Namespace = stm.Namespace,
                             Type = LeftSideExprType.Variable,
                             VariableType = stm.Variable.VariableType
                         }
@@ -452,9 +468,10 @@
                 Namespace = stm.Namespace,
                 Condition = Visit(new CompareExpr
                 {
-                    First = Visit(new GetVariableExpr { Name = assign.LeftSideExpr.Name, Type = stm.Variable.VariableType}),
+                    First = Visit(new GetVariableExpr { Name = assign.LeftSideExpr.Name, Type = stm.Variable.VariableType, Namespace = stm.Namespace}),
                     OperationText = "<=",
-                    Second = stm.ToExpression
+                    Second = stm.ToExpression,
+                    Namespace = stm.Namespace
                 }),
                 Statements = loopBody,
                 Type = LoopType.While
@@ -468,7 +485,8 @@
 
             outerBlock.Statements.Add(assign);
             outerBlock.Statements.Add(loop);
-            
+
+            Namespaces.Current = strNamespace;
             return outerBlock;
         }
 
@@ -523,6 +541,15 @@
         public dynamic Visit(LeftSideExprVariable left)
         {
             return left;
+        }
+
+        public static object GetDefault(Type type)
+        {
+            if (type.IsValueType)
+            {
+                return Activator.CreateInstance(type);
+            }
+            return null;
         }
     }
 }

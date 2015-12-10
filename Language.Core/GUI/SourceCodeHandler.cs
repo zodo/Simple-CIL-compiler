@@ -15,7 +15,7 @@
 
     public class SourceCodeHandler
     {
-        public SourceCodeHandler(string source)
+        public SourceCodeHandler(string source, bool generateAssembly)
         {
             var scanner = new Scanner();
             var parser = new Parser(scanner);
@@ -37,11 +37,24 @@
                     ASTTree = p.GetNodes();
                     //new ControlFlowVisitor().Visit(p);
                     PopulateIdentifierTree(Namespaces.Root, IdentifierTree);
+                    if (generateAssembly)
+                    {
+                        var codeGeneration = new CodeGenVisitor(p);
+                        try
+                        {
+                            codeGeneration.GenerateAssembly($"{AppDomain.CurrentDomain.BaseDirectory}\\output.exe");
+                        }
+                        catch (Exception exception)
+                        {
+                            tree.Errors.Add(new ParseError($"Что-то пошло не так {exception.Message}", 0));
+                        }
+                    }
                 }
                 catch (ParseException parseException)
                 {
                     tree.Errors.Add(parseException.Error);
                 }
+                
             }
 
             Errors = tree.Errors;

@@ -1,0 +1,36 @@
+f(number)
+    if number = 1
+        return "ОДИН"
+    end
+    
+    if number = 2
+        return "ДВА"
+    end
+    return "ХЗ"
+end
+
+main
+    write("Введите число")
+    number = readnum
+    length = 0
+    flag = true
+    while flag
+        if number %/ 10 ^ length > 0
+            length = length + 1
+        end
+        else
+            flag = false
+        end
+    end
+    result = ""
+    write (length)
+    for i = 1 to length
+        pos = length - i + 1
+        single = (number %% 10 ^ pos / 10 ^ (pos - 1)) %/ 1
+        result = result + f(single) + " "
+        write("Single is" + single)
+        
+    end
+    write(result)
+    
+end
