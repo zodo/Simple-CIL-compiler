@@ -1,0 +1,7 @@
+toint(x) => call(0, "System.Convert", "ToInt32", x)
+    
+
+main
+    write(toint(true))
+    
+end

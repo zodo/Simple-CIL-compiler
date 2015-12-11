@@ -61,7 +61,7 @@
             throw new ParseException($"Невозможно сравнить типы {expr.FirstType} и {expr.SecondType}", expr.Node);
         }
 
-        public dynamic Visit(ConsoleReadExpr expr)
+        public dynamic Visit(CallCustomExpr expr)
         {
             return expr.Type;
         }

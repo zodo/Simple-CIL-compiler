@@ -905,6 +905,8 @@ namespace TinyPG
                     }
                     break;
                 case TokenType.READFUNC:
+
+                     // Concat Rule
                     tok = scanner.Scan(TokenType.READFUNC); // Terminal Rule: READFUNC
                     n = node.CreateNode(tok, tok.ToString() );
                     node.Token.UpdateRange(tok);
@@ -912,6 +914,13 @@ namespace TinyPG
                     if (tok.Type != TokenType.READFUNC) {
                         tree.Errors.Add(new ParseError("Unexpected token '" + tok.Text.Replace("\n", "") + "' found. Expected " + TokenType.READFUNC.ToString(), 0x1001, tok));
                         return;
+                    }
+
+                     // Concat Rule
+                    tok = scanner.LookAhead(TokenType.BROPEN); // Option Rule
+                    if (tok.Type == TokenType.BROPEN)
+                    {
+                        ParseCall(node); // NonTerminal Rule: Call
                     }
                     break;
                 default:

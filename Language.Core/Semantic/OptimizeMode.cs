@@ -10,6 +10,6 @@
 
         public static bool LoopExpansion { get; set; } = true;
 
-        public static int LoopExpansionRepeatLimit { get; } = 5;
+        public static int LoopExpansionRepeatLimit { get; } = 3;
     }
 }

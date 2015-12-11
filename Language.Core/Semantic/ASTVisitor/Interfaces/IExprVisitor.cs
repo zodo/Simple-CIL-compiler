@@ -15,7 +15,7 @@
 
         dynamic Visit(CompareExpr expr);
 
-        dynamic Visit(ConsoleReadExpr expr);
+        dynamic Visit(CallCustomExpr expr);
 
         dynamic Visit(ExpressionBase expr);
 

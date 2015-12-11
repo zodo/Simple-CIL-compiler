@@ -215,9 +215,9 @@
             return node;
         }
 
-        public dynamic Visit(ConsoleReadExpr expr)
+        public dynamic Visit(CallCustomExpr expr)
         {
-            return new TreeNode($"Console read {expr.Type} function");
+            return new TreeNode($"Call func expr : {expr.Type}");
         }
 
         public dynamic Visit(ExpressionBase expr)

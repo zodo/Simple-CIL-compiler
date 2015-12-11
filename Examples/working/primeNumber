@@ -1,0 +1,24 @@
+isprime(x) 
+    count = 0
+    for n = 1 to x
+        if x %% n = 0
+        count = count + 1
+        end
+    end
+    return count <= 2
+end
+
+main
+    write("Нахождение простых чисел")
+    write("Введите число, до которого будет расчет")
+    max = readnum
+    count = 0
+    for i = 1 to max
+        if isprime(i)
+            write(i)
+            count = count + 1
+        end
+    end
+    write("{0} простых чисел на диапазоне {1} - {2}", count, 0, max)
+    
+end

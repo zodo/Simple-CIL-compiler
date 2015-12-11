@@ -1,0 +1,43 @@
+digitName(number)
+    st[0] = "НОЛЬ"
+    st[1] = "ОДИН"
+    st[2] = "ДВА"
+    st[3] = "ТРИ"
+    st[4] = "ЧЕТЫРЕ"
+    st[5] = "ПЯТЬ"
+    st[6] = "ШЕСТЬ"
+    st[7] = "СЕМЬ"
+    st[8] = "ВОСЕМЬ"
+    st[9] = "ДЕВЯТЬ"
+    return number > 9 ? "ХЗ" : st[number]
+end
+
+getNumberLength(number)
+    length = 0
+    flag = true
+    while flag
+        if number %/ 10 ^ length > 0
+            length = length + 1
+        end
+        else
+            flag = false
+        end
+    end
+    return length 
+end
+
+getNthDigit(number, digit)
+    pos = getNumberLength(number) - digit
+    return (number %% 10 ^ pos / 10 ^ (pos - 1)) %/ 1
+end
+
+main
+    write("Введите число")
+    number = readnum
+    length = getNumberLength(number)
+    result = ""
+    for i = 0 to length - 1
+        result = result + digitName(getNthDigit(number, i)) + " "
+    end
+    write(result)
+end

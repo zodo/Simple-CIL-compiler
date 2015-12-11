@@ -599,10 +599,23 @@
                 switch (value)
                 {
                     case "readnum":
-                        return new ConsoleReadExpr {Type = SymbolType.Integer, Node = this};
+                        return new CallCustomExpr { Type = SymbolType.Integer, Node = this };
                     case "readstr":
-                        return new ConsoleReadExpr {Type = SymbolType.String, Node = this};
+                        return new CallCustomExpr { Type = SymbolType.String, Node = this };
+                    case "call":
+                        try
+                        {
+                            var args = (Arguments)GetNode(TokenType.Call)?.Eval(tree);
+                            var type = args.Values[0].GetExprType();
+                            args.Values = args.Values.Skip(1).ToList();
+                            return new CallCustomExpr { Type = type, Node = this, Arguments = args };
+                        }
+                        catch (Exception)
+                        {
+                            throw new ParseException("Правильное использвание функции call : call(RetType, TypeName, MethodName, optional args)", this);
+                        }
                 }
+                
             }
             return null;
         }

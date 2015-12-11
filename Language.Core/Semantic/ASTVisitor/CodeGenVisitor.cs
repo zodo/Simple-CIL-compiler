@@ -52,6 +52,7 @@
                     {
                         Operand obj = method.Local(_currentProgram.ExpressionFactory.New(type));
                         method.Invoke(obj, "main");
+                        method.WriteLine("Press any key...");
                         method.Invoke(typeof(Console), "ReadKey");
                     }
                 }
@@ -122,8 +123,18 @@
             }
         }
 
-        public dynamic Visit(ConsoleReadExpr expr)
+        public dynamic Visit(CallCustomExpr expr)
         {
+            if (expr.Arguments != null)
+            {
+                var args = expr.Arguments?.Values.Select(x => Visit((dynamic)x)).Cast<Operand>().ToArray() ?? new Operand[0];
+                var typeName = (expr.Arguments.Values[0] as LiteralExpr).StrValue;
+                var type = Type.GetType(typeName);
+                
+                var methodName = (expr.Arguments.Values[1] as LiteralExpr).StrValue;
+                var op =  _assemblyGen.StaticFactory.Invoke(type, methodName, args.Skip(2).ToArray());
+                return _assemblyGen.StaticFactory.Invoke(typeof(Convert), "ChangeType", op, expr.Type.CodeGenType()).Cast(expr.Type.CodeGenType());
+            }
             if (expr.Type == SymbolType.String)
             {
                 return _assemblyGen.StaticFactory.Invoke(typeof(Console), "ReadLine");
@@ -140,9 +151,9 @@
         public dynamic Visit(GetArrayExpr expr)
         {
             var symbol = expr.Namespace.Symbols.SingleOrDefault(x => x.Name == expr.Name);
-            var val = ((ContextualOperand)symbol.CodeGenField)[Visit((dynamic)expr.Index)];
-
-            return val;
+            var val = ((ContextualOperand)symbol.CodeGenField)[Visit((dynamic)expr.Index)] as ContextualOperand;
+            var converted = val.Cast(expr.ValuesType.CodeGenType());
+            return converted;
         }
 
         public dynamic Visit(GetVariableExpr expr)
@@ -294,10 +305,27 @@
 
         public dynamic Visit(OperStm stm)
         {
+            var args = stm.Arguments?.Values.Select(x => Visit((dynamic)x)).Cast<Operand>().ToArray() ?? new Operand[0];
+            
             if (stm.Operation == "write")
             {
-                var objects = stm.Arguments?.Values.Select(x => Visit((dynamic)x)).Cast<Operand>().ToArray() ?? new Operand[0];
-                _codeGen.WriteLine(objects);
+                
+                _codeGen.WriteLine(args);
+            }
+            else if (stm.Operation == "call")
+            {
+                try
+                {
+                    var typeName = (stm.Arguments.Values[0] as LiteralExpr).StrValue;
+                    var type = Type.GetType(typeName);
+                    var methodName = (stm.Arguments.Values[1] as LiteralExpr).StrValue;
+                    _codeGen.Invoke(type, methodName, args.Skip(2).ToArray());
+                }
+                catch (Exception)
+                {
+                    throw new InvalidOperationException("Правильное использвание функции call : call(TypeName, MethodName, optional args)");
+                }
+                
             }
             return null;
         }

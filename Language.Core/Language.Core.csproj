@@ -70,7 +70,7 @@
     <Compile Include="Semantic\AST\Expressions\AddExpr.cs" />
     <Compile Include="Semantic\AST\Expressions\CallFuncExpr.cs" />
     <Compile Include="Semantic\AST\Expressions\CompareExpr.cs" />
-    <Compile Include="Semantic\AST\Expressions\ConsoleReadExpr.cs" />
+    <Compile Include="Semantic\AST\Expressions\CallCustomExpr.cs" />
     <Compile Include="Semantic\AST\Expressions\ExpressionBase.cs" />
     <Compile Include="Semantic\AST\Expressions\AndOrExpr.cs" />
     <Compile Include="Semantic\AST\Expressions\GetArrayExpr.cs" />

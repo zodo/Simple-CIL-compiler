@@ -533,7 +533,7 @@ namespace TinyPG
         }
 
         /// <summary>
-        /// Rule: Literal -> (INTEGER | DOUBLE | STRING | BOOL | READFUNC);
+        /// Rule: Literal -> (INTEGER | DOUBLE | STRING | BOOL | READFUNC (Call)? );
         /// </summary>
         protected virtual object EvalLiteral(ParseTree tree, params object[] paramlist)
         {

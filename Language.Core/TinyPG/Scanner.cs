@@ -108,7 +108,7 @@ namespace TinyPG
             Patterns.Add(TokenType.NOT, regex);
             Tokens.Add(TokenType.NOT);
 
-            regex = new Regex(@"write", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            regex = new Regex(@"write|call", RegexOptions.Compiled | RegexOptions.IgnoreCase);
             Patterns.Add(TokenType.OPER, regex);
             Tokens.Add(TokenType.OPER);
 
@@ -180,11 +180,11 @@ namespace TinyPG
             Patterns.Add(TokenType.BOOL, regex);
             Tokens.Add(TokenType.BOOL);
 
-            regex = new Regex(@"readnum|readstr", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            regex = new Regex(@"readnum|readstr|call", RegexOptions.Compiled | RegexOptions.IgnoreCase);
             Patterns.Add(TokenType.READFUNC, regex);
             Tokens.Add(TokenType.READFUNC);
 
-            regex = new Regex(@"[a-zA-Z_][a-zA-Z0-9_]*(?<!(^)(end|else|do|while|for|true|false|return|to|incby|global|or|and|not|write|readnum|readstr))(?!\w)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            regex = new Regex(@"[a-zA-Z_][a-zA-Z0-9_]*(?<!(^)(end|else|do|while|for|true|false|return|to|incby|global|or|and|not|write|readnum|readstr|call))(?!\w)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
             Patterns.Add(TokenType.IDENTIFIER, regex);
             Tokens.Add(TokenType.IDENTIFIER);
 

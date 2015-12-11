@@ -16,6 +16,8 @@
 
     public class OptimizeVisitor : IAstVisitor
     {
+        public static int LoopsCount = 0;
+
         public dynamic Visit(AddExpr expr)
         {
             Visit((ExpressionBase)expr);
@@ -80,6 +82,10 @@
 
         public dynamic Visit(CallFuncExpr expr)
         {
+            if (expr.Arguments != null)
+            {
+                expr.Arguments = Visit((dynamic)expr.Arguments);
+            }
             return expr;
         }
 
@@ -124,7 +130,7 @@
             return expr;
         }
 
-        public dynamic Visit(ConsoleReadExpr expr)
+        public dynamic Visit(CallCustomExpr expr)
         {
             return expr;
         }
@@ -144,7 +150,7 @@
 
         public dynamic Visit(GetVariableExpr expr)
         {
-            if (OptimizeMode.Variables)
+            if (OptimizeMode.Variables && LoopsCount <=0)
             {
                 var symbol = expr.Namespace.Symbols.FirstOrDefault(x => x.Name == expr.Name);
                 if (symbol?.Value != null)
@@ -257,6 +263,7 @@
 
         public dynamic Visit(Program program)
         {
+            LoopsCount = 0;
             program.FuncImplementations.ForEach(x => x.Optimize());
             return null;
         }
@@ -294,13 +301,17 @@
 
         public dynamic Visit(Arguments arg)
         {
+            if (OptimizeMode.ExpressionSimplify)
+            {
+                arg.Values = arg.Values.Select(x => Visit((dynamic)x)).Cast<ExpressionBase>().ToList();
+            }
             return arg;
         }
 
         public dynamic Visit(CallOrAssign stm)
         {
             stm.AssignExpression = (ExpressionBase)(stm.AssignExpression?.Optimize() ?? stm.AssignExpression);
-            if (OptimizeMode.Variables)
+            if (OptimizeMode.Variables && LoopsCount <= 0)
             {
                 var left = stm.LeftSideExpr as LeftSideExprVariable;
                 if (left != null)
@@ -339,6 +350,7 @@
 
         public dynamic Visit(DoWhileStm stm)
         {
+            LoopsCount++;
             stm.Condition = (ExpressionBase)stm.Condition.Optimize();
             stm.Statements = (CodeBlock)stm.Statements.Optimize();
             if (!OptimizeMode.UnreacheableCode)
@@ -357,12 +369,13 @@
                 case LoopType.DoWhile:
                     return condition.Value ? (dynamic)stm : stm.Statements;
             }
-
+            LoopsCount--;
             return stm;
         }
 
         public dynamic Visit(ForStm stm)
         {
+            LoopsCount++;
             stm.AssignExpression = Visit(stm.AssignExpression);
             stm.Statements = Visit(stm.Statements);
             stm.ToExpression = Visit(stm.ToExpression);
@@ -381,7 +394,11 @@
                 {
                     int startValue = assignExpr.Value;
                     int toValue = toExpr.Value;
-                    int incByValue = ((LiteralExpr)Visit((dynamic)stm.IncByExpression))?.Value ?? 1;
+                    int incByValue = 1;
+                    if (stm.IncByExpression != null)
+                    {
+                        incByValue = ((LiteralExpr)Visit((dynamic)stm.IncByExpression))?.Value ?? 1;
+                    }
 
                     var steps = (toValue - startValue) / incByValue;
                     if (steps >= 0 && steps < OptimizeMode.LoopExpansionRepeatLimit)
@@ -406,6 +423,7 @@
                             block.Statements.AddRange(Visit(stm.Statements).Statements);
                         }
                         Namespaces.Current = strNamespace;
+                        LoopsCount--;
                         return block;
                     }
                 }
@@ -487,6 +505,7 @@
             outerBlock.Statements.Add(loop);
 
             Namespaces.Current = strNamespace;
+            LoopsCount--;
             return outerBlock;
         }
 

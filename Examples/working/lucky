@@ -1,0 +1,20 @@
+main
+    count = 0
+    for first = 1 to 9
+        for second = 1 to 9
+            for third = 1 to 9
+                for fourth = 1 to 9
+                    for fiveth = 1 to 9
+                        for sixs = 1 to 9
+                            if first + second + third = fourth + fiveth + sixs
+                                count = count + 1
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+    write("Существует {0} счастливых билетов", count)
+    
+end
